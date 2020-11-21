@@ -69,7 +69,7 @@ SVG loader can also be included via Cloudflare CDN. Example:
 <script type="text/javascript" src="https://unpkg.com/external-svg-loader@0.0.2/svg-loader.min.js" async></script>
 ```
 
-## Ðisable/Modify Caching
+## Disable/Modify Caching
 By default, the XHR response is cached for 24 hours, so that any subsequent loads are instantenous. You can disable this behavior by passing `data-cache="disabled"`. You can also modify
 the caching period by passing number of seconds. Example:
 
