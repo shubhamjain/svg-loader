@@ -1,0 +1,18 @@
+{
+    "name": "external-svg-loader",
+    "description": "Plug 'n play external SVG loader",
+    "homepage": "https://github.com/shubhamjain/svg-loader",
+    "author": "Shubham Jain <hi@shubhamjain.co>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/shubhamjain/svg-loader.git"
+    },
+    "main": "svg-loader.js",
+    "version": "0.0.2",
+    "scripts": {
+        "build": "terser svg-loader.js -m -o svg-loader.min.js"
+    },
+    "devDependencies": {
+        "terser": "^5.5.0"
+    }
+}
