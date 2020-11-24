@@ -17,9 +17,10 @@ SVG Loader is designed to be plug and play. Hence, all you need to is to include
 <script type="text/javascript" src="svg-loader.min.js" async></script>
 
 <!-- Use an external SVG -->
-<svg data-src="https://s.svgbox.net/loaders.svg?icon=spinner" width="50" fill="red"></svg>
-<svg data-src="https://s.svgbox.net/loaders.svg?icon=spinner"
+<svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" fill="red"></svg>
+<svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner"
     width="50"
+    height="50" 
     fill="currentColor"
     style="color: purple;"></svg>
 ```
@@ -66,7 +67,7 @@ function App() {
 SVG loader can also be included via Cloudflare CDN. Example:
 
 ```html
-<script type="text/javascript" src="https://unpkg.com/external-svg-loader@0.0.2/svg-loader.min.js" async></script>
+<script type="text/javascript" src="https://unpkg.com/external-svg-loader@0.0.3/svg-loader.min.js" async></script>
 ```
 
 ## Disable/Modify Caching
@@ -75,17 +76,17 @@ the caching period by passing number of seconds. Example:
 
 #### Cache for a week
 ```html
-<svg data-src="https://s.svgbox.net/loaders.svg?icon=spinner" width="50" data-cache="604800"></svg>
+<svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-cache="604800"></svg>
 ```
 
 #### Cache for a six hours
 ```html
-<svg data-src="https://s.svgbox.net/loaders.svg?icon=spinner" width="50" data-cache="21600"></svg>
+<svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-cache="21600"></svg>
 ```
 
 #### Disable Caching
 ```html
-<svg data-src="https://s.svgbox.net/loaders.svg?icon=spinner" width="50" data-cache="disabled"></svg>
+<svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-cache="disabled"></svg>
 ```
 
 ## LICENSE

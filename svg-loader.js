@@ -46,7 +46,7 @@ const setCache = (url, data, cacheOpt) => {
 
     localStorage.setItem(`loader_${url}`, JSON.stringify({
         data,
-        expiry: Date.now() + Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp
+        expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp)
     }))
 }
 
@@ -70,16 +70,30 @@ const renderBody = (elem, body) => {
     elem.innerHTML = fragment.innerHTML
 }
 
+const requestsInProgress = {}
+const memoryCache = {}
+
 const renderIcon = (elem) => {
     const src = elem.getAttribute("data-src")
     const cacheOpt = elem.getAttribute("data-cache")
 
-    const cache = isCacheAvailable(src)
+    const lsCache = isCacheAvailable(src)
     const isCachingEnabled = cacheOpt !== "disabled"
 
-    if (isCachingEnabled && cache) {
+    // Memory cache optimizes same icon requested multiple
+    // times on the page
+    if (memoryCache[src] || (isCachingEnabled && lsCache)) {
+        const cache = memoryCache[src] || lsCache
+
         renderBody(elem, cache)
     } else {
+        if (requestsInProgress[src]) {
+            setTimeout(() => renderIcon(elem), 20)
+            return;
+        }
+
+        requestsInProgress[src] = true
+
         fetch(src)
             .then((body) => body.text())
             .then((body) => {
@@ -87,7 +101,12 @@ const renderIcon = (elem) => {
                     setCache(src, body, cacheOpt)
                 }
 
+                memoryCache[src] = body
+
                 renderBody(elem, body)
+            })
+            .finally(() => {
+                delete requestsInProgress[src]
             })
     }
 }
