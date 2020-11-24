@@ -111,6 +111,23 @@ const renderIcon = (elem) => {
     }
 }
 
+const intObserver = new IntersectionObserver(
+    (entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                renderIcon(entry.target)
+                
+                // Unobserve as soon as soon the icon is rendered
+                intObserver.unobserve(entry.target)
+            }
+        })
+    }, {
+        // Keep high root margin because intersection observer 
+        // can be slow to react
+        rootMargin: '600px'
+    }
+);
+
 document.addEventListener("animationstart", (e) => {
     const element = e.target
 
@@ -129,6 +146,10 @@ document.addEventListener("animationstart", (e) => {
     });
 
     if (e.animationName === "nodeInserted") {
-        renderIcon(element)
+        if (element.getAttribute("data-loading") === "lazy") {
+            intObserver.observe(element)
+        } else {
+            renderIcon(element)
+        }
     }
 }, false);

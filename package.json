@@ -8,7 +8,7 @@
         "url": "https://github.com/shubhamjain/svg-loader.git"
     },
     "main": "svg-loader.js",
-    "version": "0.0.3",
+    "version": "0.0.5",
     "scripts": {
         "build": "terser svg-loader.js -m -o svg-loader.min.js"
     },

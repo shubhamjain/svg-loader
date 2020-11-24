@@ -67,7 +67,7 @@ function App() {
 SVG loader can also be included via Cloudflare CDN. Example:
 
 ```html
-<script type="text/javascript" src="https://unpkg.com/external-svg-loader@0.0.3/svg-loader.min.js" async></script>
+<script type="text/javascript" src="https://unpkg.com/external-svg-loader@0.0.5/svg-loader.min.js" async></script>
 ```
 
 ## Disable/Modify Caching
@@ -87,6 +87,13 @@ the caching period by passing number of seconds. Example:
 #### Disable Caching
 ```html
 <svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-cache="disabled"></svg>
+```
+
+### Lazy Loading
+You can also lazy load icons by using `data-loading=lazy`. This will make icon not load until it's about to enter the viewport. For lazy loading, `external-svg-loader` uses [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API).
+
+```html
+<svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-loading="lazy"></svg>
 ```
 
 ## LICENSE
