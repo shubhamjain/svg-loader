@@ -13,7 +13,10 @@ SVG Loader is designed to be plug and play. Hence, all you need to is to include
 ### Download and Include
 
 ```html
-<!-- Include this code anywhere in your code -->
+<!-- 
+    Include this script anywhere in your code, preferably <HEAD> so
+    icons can be fetched faster.
+-->
 <script type="text/javascript" src="svg-loader.min.js" async></script>
 
 <!-- Use an external SVG -->
@@ -67,7 +70,7 @@ function App() {
 SVG loader can also be included via Cloudflare CDN. Example:
 
 ```html
-<script type="text/javascript" src="https://unpkg.com/external-svg-loader@0.0.5/svg-loader.min.js" async></script>
+<script type="text/javascript" src="https://unpkg.com/external-svg-loader@0.0.6/svg-loader.min.js" async></script>
 ```
 
 ## Disable/Modify Caching

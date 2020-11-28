@@ -1,30 +1,8 @@
-'use strict'
-
-// Using CSS animations is the most reliable and efficient 
-// way to detect dynamically added elements without polling
-// continously.
-//
-// Further reading: https://davidwalsh.name/detect-node-insertion
-const css = `
-@keyframes nodeInserted {
-        from { opacity: 0.99; }
-        to { opacity: 1; }
-    }
-    svg[data-src] {
-        animation-duration: 0.001s;
-        animation-name: nodeInserted;
-    }
-`;
-
-const head = document.head || document.getElementsByTagName('head')[0],
-    style = document.createElement('style');
-
-head.appendChild(style);
-style.appendChild(document.createTextNode(css));
+"use strict"
 
 const isCacheAvailable = (url) => {
     try {
-        const item = JSON.parse(localStorage.getItem(`loader_${url}`) || '{}')
+        const item = JSON.parse(localStorage.getItem(`loader_${url}`) || "{}")
 
         if (!item.expiry) {
             return;
@@ -43,17 +21,22 @@ const isCacheAvailable = (url) => {
 
 const setCache = (url, data, cacheOpt) => {
     const cacheExp = parseInt(cacheOpt, 10)
-
-    localStorage.setItem(`loader_${url}`, JSON.stringify({
-        data,
-        expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp)
-    }))
+    
+    try {
+        localStorage.setItem(`loader_${url}`, JSON.stringify({
+            data,
+            expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp)
+        }))
+    } catch (e) {
+        return;
+    }
+    
 }
 
 const renderBody = (elem, body) => {
     const parser = new DOMParser();
-    const doc = parser.parseFromString(body, 'text/html')
-    const fragment = doc.querySelector('svg')
+    const doc = parser.parseFromString(body, "application/xml")
+    const fragment = doc.querySelector("svg")
 
     for (let i = 0; i < fragment.attributes.length; i++) {
         const {
@@ -67,6 +50,7 @@ const renderBody = (elem, body) => {
         }
     }
 
+    elem.setAttribute("data-rendered", true)
     elem.innerHTML = fragment.innerHTML
 }
 
@@ -87,6 +71,8 @@ const renderIcon = (elem) => {
 
         renderBody(elem, cache)
     } else {
+        // If the same icon is being requested to rendered
+        // avoid firing multiple XHRs
         if (requestsInProgress[src]) {
             setTimeout(() => renderIcon(elem), 20)
             return;
@@ -124,32 +110,69 @@ const intObserver = new IntersectionObserver(
     }, {
         // Keep high root margin because intersection observer 
         // can be slow to react
-        rootMargin: '600px'
+        rootMargin: "1200px"
     }
 );
 
-document.addEventListener("animationstart", (e) => {
-    const element = e.target
-
-    // If the element's SRC is dynamically changed, fetch
-    // and inject the SVG again.
-    const observer = new MutationObserver((mutationList) => {
-        mutationList.forEach((mutation) => {
-            if (mutation.attributeName === "data-src") {
+function renderAllSVGs() {
+    Array.from(document.querySelectorAll("svg[data-src]:not([data-rendered])"))
+        .forEach((element) => {
+            if (element.getAttribute("data-loading") === "lazy") {
+                intObserver.observe(element)
+            } else {
                 renderIcon(element)
             }
         })
-    });
+}
 
-    observer.observe(element, {
-        attributes: true
-    });
-
-    if (e.animationName === "nodeInserted") {
-        if (element.getAttribute("data-loading") === "lazy") {
-            intObserver.observe(element)
-        } else {
-            renderIcon(element)
-        }
+let observerAdded = false
+const addObservers = () => {
+    if (observerAdded) {
+        return;
     }
-}, false);
+
+    observerAdded = true
+    const observer = new MutationObserver((mutationRecords) => {
+        const shouldTriggerRender = mutationRecords.some(
+            (record) => Array.from(record.addedNodes).some(
+                (elem) => elem.nodeType === Node.ELEMENT_NODE
+                    && elem.getAttribute("data-src")
+                    && !elem.getAttribute("data-rendered")
+            )
+        )
+
+        // If any node is added, render all new nodes
+        if (shouldTriggerRender){
+            renderAllSVGs();
+        }
+
+        // If data-src is changed, re-render
+        mutationRecords.forEach((record) => {
+            if (record.type === "attributes") {
+                renderIcon(record.target)
+            }
+        })
+    });
+    
+    observer.observe(
+        document.documentElement,
+        {
+            attributeFilter: ["data-src"],
+            attributes: true,
+            childList: true,
+            subtree: true
+        }
+    );    
+}
+
+// Start rendering SVGs as soon as possible
+const intervalCheck = setInterval(() => {
+    renderAllSVGs();
+}, 100)
+
+window.addEventListener("DOMContentLoaded", () => {
+    renderAllSVGs()
+    clearInterval(intervalCheck)
+})
+
+addObservers()
