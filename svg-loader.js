@@ -1,17 +1,21 @@
 "use strict"
 
-const isCacheAvailable = (url) => {
-    try {
-        const item = JSON.parse(localStorage.getItem(`loader_${url}`) || "{}")
+const { get, set, del } = require('idb-keyval');
 
-        if (!item.expiry) {
+const isCacheAvailable = async (url) => {
+    try {
+        let item = await get(`loader_${url}`)
+
+        if (!item) {
             return;
         }
+
+        item = JSON.parse(item)
 
         if (Date.now() < item.expiry) {
             return item.data
         } else {
-            localStorage.removeItem(`loader_${url}`)
+            del(`loader_${url}`)
             return;
         }
     } catch (e) {
@@ -23,7 +27,7 @@ const setCache = (url, data, cacheOpt) => {
     const cacheExp = parseInt(cacheOpt, 10)
     
     try {
-        localStorage.setItem(`loader_${url}`, JSON.stringify({
+        set(`loader_${url}`, JSON.stringify({
             data,
             expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp)
         }))
@@ -57,11 +61,12 @@ const renderBody = (elem, body) => {
 const requestsInProgress = {}
 const memoryCache = {}
 
-const renderIcon = (elem) => {
+const renderIcon = async (elem) => {
+    console.log("rendering", Date.now() -X)
     const src = elem.getAttribute("data-src")
     const cacheOpt = elem.getAttribute("data-cache")
 
-    const lsCache = isCacheAvailable(src)
+    const lsCache = await isCacheAvailable(src)
     const isCachingEnabled = cacheOpt !== "disabled"
 
     // Memory cache optimizes same icon requested multiple
@@ -114,9 +119,15 @@ const intObserver = new IntersectionObserver(
     }
 );
 
+const handled = []
 function renderAllSVGs() {
     Array.from(document.querySelectorAll("svg[data-src]:not([data-rendered])"))
         .forEach((element) => {
+            if (handled.indexOf(element) !== -1) {
+                return;
+            }
+
+            handled.push(element)
             if (element.getAttribute("data-loading") === "lazy") {
                 intObserver.observe(element)
             } else {
@@ -170,9 +181,10 @@ const intervalCheck = setInterval(() => {
     renderAllSVGs();
 }, 100)
 
-window.addEventListener("DOMContentLoaded", () => {
-    renderAllSVGs()
-    clearInterval(intervalCheck)
-})
 
-addObservers()
+window.addEventListener("DOMContentLoaded", () => {
+    clearInterval(intervalCheck)
+
+    renderAllSVGs()
+    addObservers()
+})
