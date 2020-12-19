@@ -70,7 +70,7 @@ function App() {
 SVG loader can also be included via Cloudflare CDN. Example:
 
 ```html
-<script type="text/javascript" src="https://unpkg.com/external-svg-loader@0.0.8/svg-loader.min.js" async></script>
+<script type="text/javascript" src="https://unpkg.com/external-svg-loader@0.0.9/svg-loader.min.js" async></script>
 ```
 
 ## Disable/Modify Caching

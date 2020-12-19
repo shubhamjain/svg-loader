@@ -42,18 +42,25 @@ const renderBody = (elem, body) => {
     const doc = parser.parseFromString(body, "application/xml")
     const fragment = doc.querySelector("svg")
 
+    // When svg-loader is loading the same element, it's
+    // important to keep track of original properties.
+    const attributesSet = (elem.getAttribute("data-attributes-set") || "").split(",")
+
     for (let i = 0; i < fragment.attributes.length; i++) {
         const {
             name,
             value
         } = fragment.attributes[i]
 
-        // Don't override the attributes already defined
-        if (!elem.getAttribute(name)) {
+        // Don't override the attributes already defined, but override the ones that
+        // were in the original element
+        if (!elem.getAttribute(name) || attributesSet.indexOf(name) !== -1) {
+            attributesSet.push(name)
             elem.setAttribute(name, value)
         }
     }
 
+    elem.setAttribute("data-attributes-set", attributesSet.join(","))
     elem.setAttribute("data-rendered", true)
     elem.innerHTML = fragment.innerHTML
 }
