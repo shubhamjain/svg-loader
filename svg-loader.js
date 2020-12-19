@@ -146,8 +146,8 @@ const addObservers = () => {
         const shouldTriggerRender = mutationRecords.some(
             (record) => Array.from(record.addedNodes).some(
                 (elem) => elem.nodeType === Node.ELEMENT_NODE
-                    && elem.getAttribute("data-src")
-                    && !elem.getAttribute("data-rendered")
+                    && ((elem.getAttribute("data-src") && !elem.getAttribute("data-rendered"))
+                        || elem.querySelector("svg[data-src]:not([data-rendered])"))
             )
         )
 
