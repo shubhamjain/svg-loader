@@ -3,7 +3,7 @@ SVGs from an external source can be rendered via `<img>` tags, but this has mult
 
 SVG loader is a simple JS code you can include that fetches SVGs using XHR and injects the SVG code in the tag's place, giving you best of both worlds: externally stored SVGs (e.g, on CDN) and inline SVGs.
 
-It's super-tiny: <1KB after gzipping and works well with frameworks.
+It's super-tiny: <2KB after gzipping and works well with frameworks.
 
 [**Demo →**](https://jsfiddle.net/w9gz8kcv/)
 
