@@ -61,6 +61,7 @@ function App() {
             color: 'red'
           }}
         />
+      </header>
     </div>
   )
 }
