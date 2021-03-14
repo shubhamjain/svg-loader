@@ -20,8 +20,8 @@ SVG Loader is designed to be plug and play. Hence, all you need to is to include
 <script type="text/javascript" src="svg-loader.min.js" async></script>
 
 <!-- Use an external SVG -->
-<svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" fill="red"></svg>
-<svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner"
+<svg data-src="https://s2.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" fill="red"></svg>
+<svg data-src="https://s2.svgbox.net/loaders.svg?ic=spinner"
     width="50"
     height="50" 
     fill="currentColor"
@@ -80,24 +80,24 @@ the caching period by passing number of seconds. Example:
 
 #### Cache for a week
 ```html
-<svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-cache="604800"></svg>
+<svg data-src="https://s2.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-cache="604800"></svg>
 ```
 
 #### Cache for a six hours
 ```html
-<svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-cache="21600"></svg>
+<svg data-src="https://s2.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-cache="21600"></svg>
 ```
 
 #### Disable Caching
 ```html
-<svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-cache="disabled"></svg>
+<svg data-src="https://s2.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-cache="disabled"></svg>
 ```
 
 ### Lazy Loading
 You can also lazy load icons by using `data-loading=lazy`. This will make icon not load until it's about to enter the viewport. For lazy loading, `external-svg-loader` uses [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API).
 
 ```html
-<svg data-src="https://s.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-loading="lazy"></svg>
+<svg data-src="https://s2.svgbox.net/loaders.svg?ic=spinner" width="50" height="50" data-loading="lazy"></svg>
 ```
 
 ## LICENSE
