@@ -44,7 +44,6 @@ npm install external-svg-loader
 Then, in your app, require/import `external-svg-loader` anywhere. Here's an example for create-react-app.
 
 ```jsx
-import logo from './logo.svg';
 import './App.css';
 import 'external-svg-loader';
 
@@ -52,9 +51,8 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <svg
-          data-src="https://s.svgbox.net/materialui.svg?ic=mail"
+          data-src="https://s2.svgbox.net/materialui.svg?ic=mail"
           width="50"
           fill="currentColor"
           style={{
