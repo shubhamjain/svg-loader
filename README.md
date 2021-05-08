@@ -1,11 +1,11 @@
 # SVG Loader
-![minified size](http://img.badgesize.io/shubhamjain/svg-loader/master/svg-loader.min?label=minified%20size&v=10) ![gzip size](http://img.badgesize.io/shubhamjain/svg-loader/master/svg-loader.min?compression=gzip&v=10)
+![minified size](http://img.badgesize.io/shubhamjain/svg-loader/master/svg-loader.min.js?label=minified%20size&v=10) ![gzip size](http://img.badgesize.io/shubhamjain/svg-loader/master/svg-loader.min.js?compression=gzip&v=10)
 
 SVGs from an external source can be rendered via `<img>` tags, but this has multiple drawbacks: you can't customize the fill, use CSS variables, or use focus/hover states.
 
 SVG loader is a simple JS code you can include that fetches SVGs using XHR and injects the SVG code in the tag's place, giving you best of both worlds: externally stored SVGs (e.g, on CDN) and inline SVGs.
 
-It's super-tiny: <2KB after gzipping and works well with frameworks and has minimal to no impact on performance.
+It's super-tiny, works well with frameworks and has minimal to no impact on performance.
 
 [**Demo →**](https://codepen.io/shubhamjainco/pen/rNyBVmY)
 
