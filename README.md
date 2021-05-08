@@ -80,7 +80,7 @@ ReactDOM.render(<App />, document.getElementById("container"));
 SVG loader can also be included via unpkg CDN. Example:
 
 ```html
-<script type="text/javascript" src="https://unpkg.com/external-svg-loader@1.1.0/svg-loader.min.js" async></script>
+<script type="text/javascript" src="https://unpkg.com/external-svg-loader@1.2.0/svg-loader.min.js" async></script>
 ```
 
 ### Configuration

@@ -87,9 +87,15 @@ const renderBody = (elem, options, body) => {
 
     Array.from(doc.querySelectorAll("*")).forEach((elem) => {
         // Unless explicitly set, remove JS code (default)
-        if (elem.tagName === "script" && !enableJs) {
-            elem.remove();
-            return;
+        if (elem.tagName === "script") {
+            if (!enableJs) {
+                elem.remove();
+                return;
+            } else {
+                const scriptEl = document.createElement("script");
+                scriptEl.innerHTML = elem.innerHTML;
+                document.body.appendChild(scriptEl);
+            }
         }
 
         for (let i = 0; i < elem.attributes.length; i++) {
