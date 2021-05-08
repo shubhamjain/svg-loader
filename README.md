@@ -38,16 +38,16 @@ SVG Loader is designed to be plug and play. Hence, all you need to is to include
 So you need to ensure that correct `Access-Control-Allow-Origin` headers are sent with the file being served or that the files are hosted on your own domain. 
 
 
-### Or, use from a npm package
+### Or, use from the npm package
 The library is framework/platform agnostic. You should be able to use it in React, Vue.js and others
-as long as you're inserting the correct attributes.
+as long as you're using the correct attributes.
 
 
 ```
 npm install external-svg-loader
 ```
 
-Then, in your app, require/import `external-svg-loader` anywhere. Here's an example for create-react-app.
+Then, in your app, require/import `external-svg-loader` anywhere. Here's an example:
 
 ```jsx
 import React from "react";
@@ -83,7 +83,7 @@ SVG loader can also be included via unpkg CDN. Example:
 <script type="text/javascript" src="https://unpkg.com/external-svg-loader@1.2.0/svg-loader.min.js" async></script>
 ```
 
-### Configuration
+## Configuration
 
 ### 1. Disable/Modify Caching
 By default, the XHR response is cached for 24 hours, so that any subsequent loads are instantenous. You can disable this behavior by passing `data-cache="disabled"`. You can also modify
@@ -130,7 +130,7 @@ You can disable this behavior by:
 <svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg" data-css-scoping="disabled" width="50" height="50" fill="red"></svg>
 ```
 
-### Lazy Loading
+## Lazy Loading
 You can also lazy load icons by using `data-loading=lazy`. This will make icon not load until it's about to enter the viewport. For lazy loading, `external-svg-loader` uses [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API).
 
 ```html
