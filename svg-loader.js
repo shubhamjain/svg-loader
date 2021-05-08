@@ -1,6 +1,7 @@
 "use strict";
 
 const { get, set, del } = require("idb-keyval");
+const cssScope = require("./scope-css");
 
 const isCacheAvailable = async (url) => {
     try {
@@ -63,28 +64,36 @@ const renderBody = (elem, jsEnabled, body) => {
     const elemAttributesSet = elem.getAttribute("data-attributes-set");
     const attributesSet = elemAttributesSet ? new Set(elemAttributesSet.split(",")) : new Set();
 
-    // Unless explicitly set, remove possible JS code
+    const randomNumber = Math.floor(Math.random() * 1E5);
+    const elemUniqueId = elem.getAttribute("data-id") || `svg-loader_${randomNumber}`;
+
     Array.from(doc.querySelectorAll("*")).forEach((elem) => {
-        if (elem.tagName === "script") {
-            elem.remove();
-            return;
+        // Unless explicitly set, remove possible JS code
+        if (!jsEnabled) {
+            if (elem.tagName === "script") {
+                elem.remove();
+                return;
+            }
+    
+            for (let i = 0; i < elem.attributes.length; i++) {
+                const {
+                    name,
+                    value
+                } = elem.attributes[i];
+    
+                if (eventNames.includes(name.toLowerCase())) {
+                    elem.removeAttribute(name);
+                    continue;
+                }
+    
+                if (["href", "xlink:href"].includes(name) && value.startsWith("javascript")) {
+                    elem.removeAttribute(name);
+                }
+            }
         }
 
-        for (let i = 0; i < elem.attributes.length; i++) {
-            const {
-                name,
-                value
-            } = elem.attributes[i];
-
-            if (eventNames.includes(name.toLowerCase()) && !jsEnabled) {
-                elem.removeAttribute(name);
-                continue;
-            }
-
-            if (["href", "xlink:href"].includes(name) && value.startsWith("javascript")) {
-                elem.removeAttribute(name);
-                continue;
-            }
+        if (elem.tagName === "style") {
+            elem.innerHTML = cssScope(elem.innerHTML, `[data-id="${elemUniqueId}"]`);
         }
     });
 
@@ -102,6 +111,7 @@ const renderBody = (elem, jsEnabled, body) => {
         }
     }
 
+    elem.setAttribute("data-id", elemUniqueId);
     elem.setAttribute("data-attributes-set", Array.from(attributesSet).join(","));
     elem.setAttribute("data-rendered", true);
 
