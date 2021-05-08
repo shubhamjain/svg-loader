@@ -2,6 +2,7 @@
 
 const { get, set, del } = require("idb-keyval");
 const cssScope = require("./scope-css");
+const counter = require("./counter");
 
 const isCacheAvailable = async (url) => {
     try {
@@ -44,7 +45,7 @@ const getAllEventNames = () => {
     }
 
     for (const prop in document.head) {
-        if(prop.startsWith("on")) {
+        if (prop.startsWith("on")) {
             DOM_EVENTS.push(prop);
         }
     }
@@ -52,7 +53,9 @@ const getAllEventNames = () => {
     return DOM_EVENTS;
 };
 
-const renderBody = (elem, jsEnabled, body) => {
+const renderBody = (elem, options, body) => {
+    const { enableJs, disableUniqueIds, disableCssScoping } = options;
+    
     const parser = new DOMParser();
     const doc = parser.parseFromString(body, "text/html");
     const fragment = doc.querySelector("svg");
@@ -64,35 +67,86 @@ const renderBody = (elem, jsEnabled, body) => {
     const elemAttributesSet = elem.getAttribute("data-attributes-set");
     const attributesSet = elemAttributesSet ? new Set(elemAttributesSet.split(",")) : new Set();
 
-    const randomNumber = Math.floor(Math.random() * 1E5);
-    const elemUniqueId = elem.getAttribute("data-id") || `svg-loader_${randomNumber}`;
+    const elemUniqueId = elem.getAttribute("data-id") || `svg-loader_${counter.incr()}`;
+
+    const idMap = {};
+
+    if (!disableUniqueIds) {
+        // Append a unique suffix for every ID so elements don't conflict.
+        Array.from(doc.querySelectorAll("[id]")).forEach((elem) => {
+            const id = elem.getAttribute("id");
+            const newId = `${id}_${counter.incr()}`;
+            elem.setAttribute("id", newId);
+    
+            idMap[id] = newId;
+        });    
+    }
+
+    const svgRefRegex = /url\("?#([a-zA-Z][\w:.-]*)"?\)/g;
+    const urlRefRegex = /#([a-zA-Z][\w:.-]*)/g;
 
     Array.from(doc.querySelectorAll("*")).forEach((elem) => {
-        // Unless explicitly set, remove possible JS code
-        if (!jsEnabled) {
-            if (elem.tagName === "script") {
-                elem.remove();
-                return;
+        // Unless explicitly set, remove JS code (default)
+        if (elem.tagName === "script" && !enableJs) {
+            elem.remove();
+            return;
+        }
+
+        for (let i = 0; i < elem.attributes.length; i++) {
+            const {
+                name,
+                value
+            } = elem.attributes[i];
+
+            // fill="url(#abc)" -> fill="url(#abc_2)"
+            // Use the unique IDs created previously
+            if (value.match(svgRefRegex)) {
+                const newValue = value.replace(svgRefRegex, function (g0, g1) {
+                    if (!idMap[g1]) {
+                        return g0;
+                    }
+
+                    return `url(#${idMap[g1]})`;
+                });
+
+                if (value !== newValue) {
+                    elem.setAttribute(name, newValue);
+                }
             }
-    
-            for (let i = 0; i < elem.attributes.length; i++) {
-                const {
-                    name,
-                    value
-                } = elem.attributes[i];
-    
-                if (eventNames.includes(name.toLowerCase())) {
-                    elem.removeAttribute(name);
-                    continue;
+
+            // <use href="#X" -> <use href="#X_23"
+            // Use the unique IDs created previously
+            if (["href", "xlink:href"].includes(name)) {
+                if (value.match(urlRefRegex)) {
+                    const newValue = value.replace(urlRefRegex, function (g0, g1) {
+                        if (!idMap[g1]) {
+                            return g0;
+                        }
+
+                        return `#${idMap[g1]}`;
+                    });
+
+                    if (value !== newValue) {
+                        elem.setAttribute(name, newValue);
+                    }
                 }
-    
-                if (["href", "xlink:href"].includes(name) && value.startsWith("javascript")) {
-                    elem.removeAttribute(name);
-                }
+            }
+
+            // Remove event functions: onmouseover, onclick ... unless specifically enabled
+            if (eventNames.includes(name.toLowerCase()) && !enableJs) {
+                elem.removeAttribute(name);
+                continue;
+            }
+
+            // Remove "javascript:..." unless specifically enabled
+            if (["href", "xlink:href"].includes(name) && value.startsWith("javascript") && !enableJs) {
+                elem.removeAttribute(name);
             }
         }
 
-        if (elem.tagName === "style") {
+        // .first -> [data-id="svg_loader_341xx"] .first
+        // Makes sure that class names don't conflict with each other.
+        if (elem.tagName === "style" && !disableCssScoping) {
             elem.innerHTML = cssScope(elem.innerHTML, `[data-id="${elemUniqueId}"]`);
         }
     });
@@ -125,12 +179,14 @@ const renderIcon = async (elem) => {
     const src = elem.getAttribute("data-src");
     const cacheOpt = elem.getAttribute("data-cache");
 
-    const jsEnabled = elem.hasAttribute("data-js-enabled");
+    const enableJs = elem.getAttribute("data-js") === "enabled";
+    const disableUniqueIds = elem.getAttribute("data-unique-ids") === "disabled";
+    const disableCssScoping = elem.getAttribute("data-css-scoping") === "disabled";
 
     const lsCache = await isCacheAvailable(src);
     const isCachingEnabled = cacheOpt !== "disabled";
 
-    const renderBodyCb = renderBody.bind(this, elem, jsEnabled);
+    const renderBodyCb = renderBody.bind(this, elem, { enableJs, disableUniqueIds, disableCssScoping });
 
     // Memory cache optimizes same icon requested multiple
     // times on the page
