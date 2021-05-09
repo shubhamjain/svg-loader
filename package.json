@@ -1,5 +1,6 @@
 {
     "name": "external-svg-loader",
+    "license": "MIT",
     "description": "Plug 'n play external SVG loader",
     "homepage": "https://github.com/shubhamjain/svg-loader",
     "author": "Shubham Jain <hi@shubhamjain.co>",
@@ -8,7 +9,7 @@
         "url": "https://github.com/shubhamjain/svg-loader.git"
     },
     "main": "svg-loader.js",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "scripts": {
         "minify": "terser svg-loader.min.js -m --toplevel -o svg-loader.min.js",
         "build": "npm run compile && npm run minify",
