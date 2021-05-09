@@ -1,8 +1,8 @@
 "use strict";
 
 const { get, set, del } = require("idb-keyval");
-const cssScope = require("./scope-css");
-const counter = require("./counter");
+const cssScope = require("./lib/scope-css");
+const counter = require("./lib/counter");
 
 const isCacheAvailable = async (url) => {
     try {

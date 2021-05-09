@@ -10,7 +10,7 @@
     "main": "svg-loader.js",
     "version": "1.2.1",
     "scripts": {
-        "minify": "terser svg-loader.min.js -m --toplevel -o  svg-loader.min.js",
+        "minify": "terser svg-loader.min.js -m --toplevel -o svg-loader.min.js",
         "build": "npm run compile && npm run minify",
         "compile": "browserify svg-loader.js -o svg-loader.min.js"
     },
