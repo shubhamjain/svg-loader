@@ -211,8 +211,19 @@ const renderIcon = async (elem) => {
         requestsInProgress[src] = true;
 
         fetch(src)
-            .then((body) => body.text())
+            .then((response) => {
+                if (!response.ok) {
+                    throw Error(`Request for '${src}' returned ${response.status} (${response.statusText})`);
+                }
+                return response.text();
+            })
             .then((body) => {
+                const bodyLower = body.toLowerCase().trim();
+                
+                if (!(bodyLower.startsWith("<svg") || bodyLower.startsWith("<?xml"))) {
+                    throw Error(`Resource '${src}' returned an invalid SVG file`);
+                }
+
                 if (isCachingEnabled) {
                     setCache(src, body, cacheOpt);
                 }
@@ -220,6 +231,9 @@ const renderIcon = async (elem) => {
                 memoryCache[src] = body;
 
                 renderBodyCb(body);
+            })
+            .catch((e) => {
+                console.error(e);
             })
             .finally(() => {
                 delete requestsInProgress[src];
