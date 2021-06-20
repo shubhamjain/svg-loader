@@ -25,17 +25,18 @@ const isCacheAvailable = async (url) => {
     }
 };
 
-const setCache = (url, data, cacheOpt) => {
-    const cacheExp = parseInt(cacheOpt, 10);
-    
+const setCache = async (url, data, cacheOpt) => {
     try {
-        set(`loader_${url}`, JSON.stringify({
+        const cacheExp = parseInt(cacheOpt, 10);
+        
+        await set(`loader_${url}`, JSON.stringify({
             data,
             expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp)
         }));
+
     } catch (e) {
-        return;
-    }  
+        console.error(e);
+    };
 };
 
 const DOM_EVENTS = [];
@@ -56,7 +57,7 @@ const getAllEventNames = () => {
 const attributesSet = {};
 const renderBody = (elem, options, body) => {
     const { enableJs, disableUniqueIds, disableCssScoping } = options;
-    
+
     const parser = new DOMParser();
     const doc = parser.parseFromString(body, "text/html");
     const fragment = doc.querySelector("svg");
@@ -77,9 +78,9 @@ const renderBody = (elem, options, body) => {
             const id = elem.getAttribute("id");
             const newId = `${id}_${counter.incr()}`;
             elem.setAttribute("id", newId);
-    
+
             idMap[id] = newId;
-        });    
+        });
     }
 
     const svgRefRegex = /url\("?#([a-zA-Z][\w:.-]*)"?\)/g;
@@ -172,7 +173,7 @@ const renderBody = (elem, options, body) => {
     }
 
     attributesSet[elemUniqueId] = elemAttributesSet;
-    
+
     elem.setAttribute("data-id", elemUniqueId);
     elem.innerHTML = fragment.innerHTML;
 };
@@ -218,7 +219,7 @@ const renderIcon = async (elem) => {
             })
             .then((body) => {
                 const bodyLower = body.toLowerCase().trim();
-                
+
                 if (!(bodyLower.startsWith("<svg") || bodyLower.startsWith("<?xml"))) {
                     throw Error(`Resource '${src}' returned an invalid SVG file`);
                 }
@@ -245,16 +246,16 @@ const intObserver = new IntersectionObserver(
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
                 renderIcon(entry.target);
-                
+
                 // Unobserve as soon as soon the icon is rendered
                 intObserver.unobserve(entry.target);
             }
         });
     }, {
-        // Keep high root margin because intersection observer 
-        // can be slow to react
-        rootMargin: "1200px"
-    }
+    // Keep high root margin because intersection observer 
+    // can be slow to react
+    rootMargin: "1200px"
+}
 );
 
 const handled = [];
@@ -292,7 +293,7 @@ const addObservers = () => {
 
         // If any node is added, render all new nodes because the nodes that have already
         // been rendered won't be rendered again.
-        if (shouldTriggerRender){
+        if (shouldTriggerRender) {
             renderAllSVGs();
         }
 
@@ -303,7 +304,7 @@ const addObservers = () => {
             }
         });
     });
-    
+
     observer.observe(
         document.documentElement,
         {
@@ -312,7 +313,7 @@ const addObservers = () => {
             childList: true,
             subtree: true
         }
-    );    
+    );
 };
 
 // Start rendering SVGs as soon as possible
