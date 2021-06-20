@@ -25,17 +25,18 @@ const isCacheAvailable = async (url) => {
     }
 };
 
-const setCache = (url, data, cacheOpt) => {
-    const cacheExp = parseInt(cacheOpt, 10);
+const setCache = async (url, data, cacheOpt) => {
+    try {
+        const cacheExp = parseInt(cacheOpt, 10);
+        
+        await set(`loader_${url}`, JSON.stringify({
+            data,
+            expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp)
+        }));
 
-    set(`loader_${url}`, JSON.stringify({
-        data,
-        expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp)
-    })).catch((e) => { 
-        console.error(e); 
-    });
-
-
+    } catch (e) {
+        console.error(e);
+    };
 };
 
 const DOM_EVENTS = [];
