@@ -2,6 +2,7 @@
 
 const { get, set, del } = require("idb-keyval");
 const cssScope = require("./lib/scope-css");
+const cssUrlFixer = require("./lib/css-url-fixer");
 const counter = require("./lib/counter");
 
 const isCacheAvailable = async (url) => {
@@ -83,9 +84,6 @@ const renderBody = (elem, options, body) => {
         });
     }
 
-    const svgRefRegex = /url\("?#([a-zA-Z][\w:.-]*)"?\)/g;
-    const urlRefRegex = /#([a-zA-Z][\w:.-]*)/g;
-
     Array.from(doc.querySelectorAll("*")).forEach((elem) => {
         // Unless explicitly set, remove JS code (default)
         if (elem.tagName === "script") {
@@ -105,38 +103,10 @@ const renderBody = (elem, options, body) => {
                 value
             } = elem.attributes[i];
 
-            // fill="url(#abc)" -> fill="url(#abc_2)"
-            // Use the unique IDs created previously
-            if (value.match(svgRefRegex)) {
-                const newValue = value.replace(svgRefRegex, function (g0, g1) {
-                    if (!idMap[g1]) {
-                        return g0;
-                    }
+            const newValue = cssUrlFixer(idMap, value, name);
 
-                    return `url(#${idMap[g1]})`;
-                });
-
-                if (value !== newValue) {
-                    elem.setAttribute(name, newValue);
-                }
-            }
-
-            // <use href="#X" -> <use href="#X_23"
-            // Use the unique IDs created previously
-            if (["href", "xlink:href"].includes(name)) {
-                if (value.match(urlRefRegex)) {
-                    const newValue = value.replace(urlRefRegex, function (g0, g1) {
-                        if (!idMap[g1]) {
-                            return g0;
-                        }
-
-                        return `#${idMap[g1]}`;
-                    });
-
-                    if (value !== newValue) {
-                        elem.setAttribute(name, newValue);
-                    }
-                }
+            if (newValue && value !== newValue) {
+                elem.setAttribute(name, newValue);
             }
 
             // Remove event functions: onmouseover, onclick ... unless specifically enabled
@@ -155,6 +125,9 @@ const renderBody = (elem, options, body) => {
         // Makes sure that class names don't conflict with each other.
         if (elem.tagName === "style" && !disableCssScoping) {
             elem.innerHTML = cssScope(elem.innerHTML, `[data-id="${elemUniqueId}"]`);
+            const newValue = cssUrlFixer(idMap, elem.innerHTML);
+            if (newValue && newValue !== elem.innerHTML)
+                elem.innerHTML = newValue;
         }
     });
 
