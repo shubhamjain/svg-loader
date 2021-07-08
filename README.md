@@ -1,4 +1,5 @@
 # SVG Loader
+[![NPM](https://img.shields.io/npm/v/external-svg-loader.svg)](https://www.npmjs.com/package/external-svg-loader)
 ![minified size](http://img.badgesize.io/shubhamjain/svg-loader/master/svg-loader.min.js?label=minified%20size&v=10) ![gzip size](http://img.badgesize.io/shubhamjain/svg-loader/master/svg-loader.min.js?compression=gzip&v=10)
 
 SVGs from an external source can be rendered via `<img>` tags, but this has multiple drawbacks: you can't customize the fill, use CSS variables, or use focus/hover states.
