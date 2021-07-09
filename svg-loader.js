@@ -105,7 +105,7 @@ const renderBody = (elem, options, body) => {
 
             const newValue = cssUrlFixer(idMap, value, name);
 
-            if (newValue && value !== newValue) {
+            if (value !== newValue) {
                 elem.setAttribute(name, newValue);
             }
 
@@ -124,9 +124,9 @@ const renderBody = (elem, options, body) => {
         // .first -> [data-id="svg_loader_341xx"] .first
         // Makes sure that class names don't conflict with each other.
         if (elem.tagName === "style" && !disableCssScoping) {
-            elem.innerHTML = cssScope(elem.innerHTML, `[data-id="${elemUniqueId}"]`);
-            const newValue = cssUrlFixer(idMap, elem.innerHTML);
-            if (newValue && newValue !== elem.innerHTML)
+            let newValue = cssScope(elem.innerHTML, `[data-id="${elemUniqueId}"]`);
+            newValue = cssUrlFixer(idMap, newValue);
+            if (newValue !== elem.innerHTML)
                 elem.innerHTML = newValue;
         }
     });
