@@ -138,5 +138,29 @@ You can also lazy load icons by using `data-loading=lazy`. This will make icon n
 <svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg" width="50" height="50" data-loading="lazy"></svg>
 ```
 
+## Fallback Icon
+You can specify a fallback icon, using `data-fallback='<svg>...</svg>'`. It will ensure, an icon will be displayed by default if something went wrong during the downloading of the first icon.
+
+```html
+<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg" width="50" height="50" data-fallback='<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50"/></svg>'></svg>
+```
+
+### React
+You will need to pass the fallback icon SVG, as a string to the `data-fallback` attribute. You can easily import an `.svg` in react using the following lines:
+```jsx
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import {ReactComponent as Icon} from './default-icon.svg';
+var defaultIcon = renderToStaticMarkup(<Icon/>);
+export const MyComponent = (props) => {
+  return (<svg 
+    data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg" 
+    width="50"
+    height="50"
+    data-fallback={defaultIcon}></svg>
+  )
+}
+```
+
 ## LICENSE
 MIT

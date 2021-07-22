@@ -156,6 +156,8 @@ const memoryCache = {};
 
 const renderIcon = async (elem) => {
     const src = elem.getAttribute("data-src");
+    const fallbackIcon = elem.getAttribute("data-fallback");
+
     const cacheOpt = elem.getAttribute("data-cache");
 
     const enableJs = elem.getAttribute("data-js") === "enabled";
@@ -207,6 +209,10 @@ const renderIcon = async (elem) => {
             })
             .catch((e) => {
                 console.error(e);
+                if (fallbackIcon
+                    && (fallbackIcon.startsWith("<svg") || bodyLower.startsWith("<?xml"))) {
+                    renderBodyCb(fallbackIcon);
+                }
             })
             .finally(() => {
                 delete requestsInProgress[src];
