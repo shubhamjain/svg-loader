@@ -214,22 +214,26 @@ const renderIcon = async (elem) => {
     }
 };
 
-const intObserver = new IntersectionObserver(
-    (entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                renderIcon(entry.target);
-
-                // Unobserve as soon as soon the icon is rendered
-                intObserver.unobserve(entry.target);
-            }
-        });
-    }, {
-    // Keep high root margin because intersection observer 
-    // can be slow to react
-    rootMargin: "1200px"
+let intObserver;
+if (globalThis.IntersectionObserver) {
+    const intObserver = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    renderIcon(entry.target);
+    
+                    // Unobserve as soon as soon the icon is rendered
+                    intObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            // Keep high root margin because intersection observer 
+            // can be slow to react
+            rootMargin: "1200px"
+        }
+    );
 }
-);
+
 
 const handled = [];
 function renderAllSVGs() {
@@ -289,15 +293,17 @@ const addObservers = () => {
     );
 };
 
-// Start rendering SVGs as soon as possible
-const intervalCheck = setInterval(() => {
-    renderAllSVGs();
-}, 100);
+if (globalThis.addEventListener) {
+    // Start rendering SVGs as soon as possible
+    const intervalCheck = setInterval(() => {
+        renderAllSVGs();
+    }, 100);
 
+    globalThis.addEventListener("DOMContentLoaded", () => {
+        clearInterval(intervalCheck);
+    
+        renderAllSVGs();
+        addObservers();
+    });
+}
 
-window.addEventListener("DOMContentLoaded", () => {
-    clearInterval(intervalCheck);
-
-    renderAllSVGs();
-    addObservers();
-});
