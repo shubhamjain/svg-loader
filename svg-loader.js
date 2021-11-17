@@ -124,7 +124,7 @@ const renderBody = (elem, options, body) => {
         // .first -> [data-id="svg_loader_341xx"] .first
         // Makes sure that class names don't conflict with each other.
         if (elem.tagName === "style" && !disableCssScoping) {
-            let newValue = cssScope(elem.innerHTML, `[data-id="${elemUniqueId}"]`);
+            let newValue = cssScope(elem.innerHTML, `[data-id="${elemUniqueId}"]`, idMap);
             newValue = cssUrlFixer(idMap, newValue);
             if (newValue !== elem.innerHTML)
                 elem.innerHTML = newValue;
