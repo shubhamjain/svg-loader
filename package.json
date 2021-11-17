@@ -9,7 +9,7 @@
         "url": "https://github.com/shubhamjain/svg-loader.git"
     },
     "main": "svg-loader.js",
-    "version": "1.3.4",
+    "version": "1.4.0",
     "scripts": {
         "minify": "terser svg-loader.min.js -m --toplevel -o svg-loader.min.js",
         "build": "npm run compile && npm run minify",
