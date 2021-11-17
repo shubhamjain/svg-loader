@@ -14,10 +14,12 @@
         "minify": "terser svg-loader.min.js -m --toplevel -o svg-loader.min.js",
         "build": "npm run compile && npm run minify",
         "compile": "browserify svg-loader.js -o svg-loader.min.js",
-        "watch": "watch 'npm run compile' . -d -u"
+        "watch": "watch 'npm run compile' . -d -u",
+        "http": "http-server"
     },
     "devDependencies": {
         "browserify": "^17.0.0",
+        "http-server": "^14.0.0",
         "terser": "^5.5.0",
         "watch": "^1.0.2"
     },

@@ -1,0 +1,61 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="/test/main.css">
+        <style>
+            .heading {
+                font-weight: bold;
+                margin-top: 16px;
+            }
+
+            svg {
+                margin-top: 4px;
+            }
+        </style>
+    </head>
+
+    <h1>
+        List of different examples
+    </h1>
+    <p>The purpose is to add as many possible ways to use svg-loader. Before pushing any change, this can be verified to make sure
+        all cases are covered.
+    </p>
+    <br>
+
+    <div class="heading">Local Icon</div>
+    <svg data-src="/test/cog.svg"></svg>
+
+    <div class="heading">Local Icon (Using Fill)</div>
+    <svg data-src="/test/cog.svg" fill="red"></svg>
+
+    <div class="heading">Icon over XHR</div>
+    <svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg"></svg>
+
+    <div class="heading">Icon over XHR (no caching)</div>
+    <svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg?cache=disabled" fill="red" data-cache="disabled"></svg>
+
+    <div class="heading">Icon with JS</div>
+    <div>JS is disabled by default so the following icon shouldn't alert on hover</div>
+    <svg data-src="/test/cog-with-script.svg"></svg>
+
+    <div class="heading">Icon with JS (enabled)</div>
+    <div>On hover alert should be thrown</div>
+    <svg data-src="/test/cog-with-script.svg" data-js="enabled"></svg>
+
+    <div class="heading">Icon with ID (using xlink:href)</div>
+    <div>The Reference ID should be made unique</div>
+    <svg data-src="/test/svg-file-id.svg"></svg>
+
+    <div class="heading">Icon with ID (using href)</div>
+    <svg data-src="/test/svg-file-id-2.svg"></svg>
+    
+    <div class="heading">Icon with ID (using CSS + href)</div>
+    <svg data-src="/test/svg-file-id-3.svg"></svg>
+
+    <div class="heading">Icon with ID (url() in quotes)</div>
+    <svg data-src="/test/svg-file-id-4.svg"></svg>
+
+    <div class="heading">Icon with ID (Disabled uniqueifying)</div>
+    <svg data-src="/test/svg-file-id-4.svg" data-unique-ids="disabled"></svg>
+    
+    <script src="/svg-loader.min.js" type="text/javascript"></script>
+</html>
