@@ -11,17 +11,17 @@
     "main": "svg-loader.js",
     "version": "1.4.0",
     "scripts": {
-        "minify": "terser svg-loader.min.js -m --toplevel -o svg-loader.min.js",
-        "build": "npm run compile && npm run minify",
-        "compile": "browserify svg-loader.js -o svg-loader.min.js",
-        "watch": "watch 'npm run compile' . -d -u",
-        "http": "http-server"
+        "build": "NODE_ENV=production webpack build",
+        "dev:watch": "webpack watch --mode development",
+        "dev:http": "cd test && http-server",
+        "dev": "npm-run-all --parallel dev:*"
     },
     "devDependencies": {
-        "browserify": "^17.0.0",
         "http-server": "^14.0.0",
-        "terser": "^5.5.0",
-        "watch": "^1.0.2"
+        "npm-run-all": "^4.1.5",
+        "rollup": "^2.72.0",
+        "webpack": "^5.72.0",
+        "webpack-cli": "^4.9.2"
     },
     "dependencies": {
         "idb-keyval": "^3.2.0"
