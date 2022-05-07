@@ -165,7 +165,7 @@ const renderIcon = async (elem) => {
     const lsCache = await isCacheAvailable(src);
     const isCachingEnabled = cacheOpt !== "disabled";
 
-    const renderBodyCb = renderBody.bind(this, elem, { enableJs, disableUniqueIds, disableCssScoping });
+    const renderBodyCb = renderBody.bind(self, elem, { enableJs, disableUniqueIds, disableCssScoping });
 
     // Memory cache optimizes same icon requested multiple
     // times on the page
@@ -236,7 +236,7 @@ if (globalThis.IntersectionObserver) {
 
 
 const handled = [];
-function renderAllSVGs() {
+const renderAllSVGs = function () {
     Array.from(document.querySelectorAll("svg[data-src]:not([data-id])"))
         .forEach((element) => {
             if (handled.indexOf(element) !== -1) {
@@ -253,7 +253,7 @@ function renderAllSVGs() {
 }
 
 let observerAdded = false;
-const addObservers = () => {
+const addObservers = function () {
     if (observerAdded) {
         return;
     }
