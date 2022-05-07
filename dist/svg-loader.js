@@ -1,9 +1,269 @@
-"use strict";
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
 
-const { get, set, del } = require("idb-keyval");
-const cssScope = require("./lib/scope-css");
-const cssUrlFixer = require("./lib/css-url-fixer");
-const counter = require("./lib/counter");
+/***/ "./lib/counter.js":
+/*!************************!*\
+  !*** ./lib/counter.js ***!
+  \************************/
+/***/ ((module) => {
+
+
+
+let counter = 0;
+
+module.exports = {
+    incr () {
+        return ++counter;
+    },
+
+    decr () {
+        return --counter;
+    },
+
+    curr () {
+        return counter;
+    }
+};
+
+/***/ }),
+
+/***/ "./lib/css-url-fixer.js":
+/*!******************************!*\
+  !*** ./lib/css-url-fixer.js ***!
+  \******************************/
+/***/ ((module) => {
+
+
+
+/**
+ * Handle all SVG references correctly, which can be
+ *   a) via attributes: url(#abc)
+ *   b) via tags: <use href="#abc" />
+ *   c) via css: .class { fill: url(#abc) }
+ * @param {object} idMap: Map previous id with the new unique id
+ * @param {string} attributeValueOrCSS
+ * @param {string} attributeName
+ * @returns attribute or css value with correct id
+ */
+module.exports = (idMap, attributeValueOrCSS, attributeName = "") => {
+    const svgRefRegex = /url\(['"]?#([\w:.-]+)['"]?\)/g;
+    const urlRefRegex = /#([\w:.-]+)/g;
+
+    // fill="url(#abc)" -> fill="url(#abc_2)"
+    // Use the unique IDs created previously
+    if (attributeValueOrCSS.match(svgRefRegex)) {
+        attributeValueOrCSS = attributeValueOrCSS.replace(svgRefRegex, function (g0, g1) {
+            if (!idMap[g1]) {
+                return g0;
+            }
+            return `url(#${idMap[g1]})`;
+        });
+    }
+
+    // <use href="#X" -> <use href="#X_23"
+    // Use the unique IDs created previously
+    if (["href", "xlink:href"].includes(attributeName)) {
+        if (attributeValueOrCSS.match(urlRefRegex)) {
+            attributeValueOrCSS = attributeValueOrCSS.replace(urlRefRegex, function (g0, g1) {
+                if (!idMap[g1]) {
+                    return g0;
+                }
+                return `#${idMap[g1]}`;
+            });
+        }
+    }
+    return attributeValueOrCSS;
+};
+
+
+/***/ }),
+
+/***/ "./lib/scope-css.js":
+/*!**************************!*\
+  !*** ./lib/scope-css.js ***!
+  \**************************/
+/***/ ((module) => {
+
+
+
+// Source: https://github.com/thomaspark/scoper
+module.exports = (css, prefix, idMap) => {
+    const re = new RegExp("([^\r\n,{}]+)(,(?=[^}]*{)|\s*{)", "g");
+    css = css.replace(re, function (g0, g1, g2) {
+
+        if (g1.match(/^\s*(@media|@.*keyframes|to|from|@font-face|1?[0-9]?[0-9])/)) {
+            return g1 + g2;
+        }
+
+        const idRegex = /#(\w+)/;
+        const match = g1.match(idRegex);
+
+        if (match && idMap[match[1]]) {
+            g1 = g1.replace(match[0], `#${idMap[match[1]]}`);
+        }
+
+        g1 = g1.replace(/^(\s*)/, "$1" + prefix + " ");
+
+        return g1 + g2;
+    });
+
+    return css;
+};
+
+/***/ }),
+
+/***/ "./node_modules/idb-keyval/dist/idb-keyval.mjs":
+/*!*****************************************************!*\
+  !*** ./node_modules/idb-keyval/dist/idb-keyval.mjs ***!
+  \*****************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Store": () => (/* binding */ Store),
+/* harmony export */   "clear": () => (/* binding */ clear),
+/* harmony export */   "del": () => (/* binding */ del),
+/* harmony export */   "get": () => (/* binding */ get),
+/* harmony export */   "keys": () => (/* binding */ keys),
+/* harmony export */   "set": () => (/* binding */ set)
+/* harmony export */ });
+class Store {
+    constructor(dbName = 'keyval-store', storeName = 'keyval') {
+        this.storeName = storeName;
+        this._dbp = new Promise((resolve, reject) => {
+            const openreq = indexedDB.open(dbName, 1);
+            openreq.onerror = () => reject(openreq.error);
+            openreq.onsuccess = () => resolve(openreq.result);
+            // First time setup: create an empty object store
+            openreq.onupgradeneeded = () => {
+                openreq.result.createObjectStore(storeName);
+            };
+        });
+    }
+    _withIDBStore(type, callback) {
+        return this._dbp.then(db => new Promise((resolve, reject) => {
+            const transaction = db.transaction(this.storeName, type);
+            transaction.oncomplete = () => resolve();
+            transaction.onabort = transaction.onerror = () => reject(transaction.error);
+            callback(transaction.objectStore(this.storeName));
+        }));
+    }
+}
+let store;
+function getDefaultStore() {
+    if (!store)
+        store = new Store();
+    return store;
+}
+function get(key, store = getDefaultStore()) {
+    let req;
+    return store._withIDBStore('readonly', store => {
+        req = store.get(key);
+    }).then(() => req.result);
+}
+function set(key, value, store = getDefaultStore()) {
+    return store._withIDBStore('readwrite', store => {
+        store.put(value, key);
+    });
+}
+function del(key, store = getDefaultStore()) {
+    return store._withIDBStore('readwrite', store => {
+        store.delete(key);
+    });
+}
+function clear(store = getDefaultStore()) {
+    return store._withIDBStore('readwrite', store => {
+        store.clear();
+    });
+}
+function keys(store = getDefaultStore()) {
+    const keys = [];
+    return store._withIDBStore('readonly', store => {
+        // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
+        // And openKeyCursor isn't supported by Safari.
+        (store.openKeyCursor || store.openCursor).call(store).onsuccess = function () {
+            if (!this.result)
+                return;
+            keys.push(this.result.key);
+            this.result.continue();
+        };
+    }).then(() => keys);
+}
+
+
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+/*!***********************!*\
+  !*** ./svg-loader.js ***!
+  \***********************/
+
+
+const { get, set, del } = __webpack_require__(/*! idb-keyval */ "./node_modules/idb-keyval/dist/idb-keyval.mjs");
+const cssScope = __webpack_require__(/*! ./lib/scope-css */ "./lib/scope-css.js");
+const cssUrlFixer = __webpack_require__(/*! ./lib/css-url-fixer */ "./lib/css-url-fixer.js");
+const counter = __webpack_require__(/*! ./lib/counter */ "./lib/counter.js");
 
 const isCacheAvailable = async (url) => {
     try {
@@ -307,3 +567,9 @@ if (globalThis.addEventListener) {
     });
 }
 
+
+})();
+
+/******/ })()
+;
+//# sourceMappingURL=svg-loader.js.map

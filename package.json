@@ -8,8 +8,8 @@
         "type": "git",
         "url": "https://github.com/shubhamjain/svg-loader.git"
     },
-    "main": "svg-loader.js",
-    "version": "1.4.0",
+    "main": "dist/svg-loader.min.js",
+    "version": "1.4.1",
     "scripts": {
         "build": "NODE_ENV=production webpack build",
         "dev:watch": "webpack watch --mode development",
