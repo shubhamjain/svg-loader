@@ -185,7 +185,7 @@ When the SVG has been loaded an event `iconload` is triggered. This can be used 
 ```html
 <svg
   data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg"
-  oniconload="console.log('Icon loaded #1', this)"></svg>
+  oniconload="console.log('Icon loaded', this)"></svg>
 ```
 
 ### Using addEventListener
@@ -195,7 +195,7 @@ When the SVG has been loaded an event `iconload` is triggered. This can be used 
 <script>
   window.addEventListener('iconload', (e) => {
       if (e.target.id === 'iconload') {
-        console.log('Icon loaded #2', e.target);
+        console.log('Icon loaded', e.target);
       }
   });
 </script>
