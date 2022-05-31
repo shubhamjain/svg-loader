@@ -409,6 +409,30 @@ const renderBody = (elem, options, body) => {
 
     elem.setAttribute("data-id", elemUniqueId);
     elem.innerHTML = fragment.innerHTML;
+
+    const event = new CustomEvent('iconload', {
+        bubbles: true
+    });
+    elem.dispatchEvent(event);
+
+    if (elem.getAttribute('oniconload')) {
+        // Handling (and executing) event attribute for our event (oniconload)
+        // isn't straightforward. Because a) the code is a raw string b) there's
+        // no way to specify the context for execution. So, `this` in the attribute
+        // will point to `window` instead of the element itself. 
+        //
+        // Here we are recycling a rarely used GlobalEventHandler 'onloadedmetadata'
+        // and offloading the execution to the browser. This is a hack, but because
+        // the event doesn't bubble, it shouldn't affect anything else in the code. 
+        elem.setAttribute('onloadedmetadata', elem.getAttribute('oniconload'));
+        
+        const event = new CustomEvent('loadedmetadata', {
+            bubbles: false
+        });
+        elem.dispatchEvent(event);
+
+        elem.removeAttribute('onloadedmetadata');
+    }
 };
 
 const requestsInProgress = {};

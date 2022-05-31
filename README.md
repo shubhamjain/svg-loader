@@ -23,14 +23,23 @@ SVG Loader is designed to be plug and play. Hence, all you need to is to include
 <script type="text/javascript" src="svg-loader.min.js" async></script>
 
 <!-- Use an external SVG -->
-<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/star.svg" width="50" height="50" fill="red"></svg>
-<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg" width="50" height="50" fill="red"></svg>
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/star.svg"
+  width="50"
+  height="50"
+  fill="red"></svg>
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg"
+  width="50"
+  height="50"
+  fill="red"></svg>
 
-<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg"
-    width="50"
-    height="50"
-    fill="currentColor"
-    style="color: purple;"></svg>
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg"
+  width="50"
+  height="50"
+  fill="currentColor"
+  style="color: purple;"></svg>
 ```
 
 [**See Here →**](https://codepen.io/shubhamjainco/pen/jOBEgPY)
@@ -81,7 +90,7 @@ ReactDOM.render(<App />, document.getElementById("container"));
 SVG loader can also be included via unpkg CDN. Example:
 
 ```html
-<script type="text/javascript" src="https://unpkg.com/external-svg-loader@1.3.1/svg-loader.min.js" async></script>
+<script type="text/javascript" src="https://unpkg.com/external-svg-loader@latest/svg-loader.min.js" async></script>
 ```
 
 ## Configuration
@@ -92,17 +101,29 @@ the caching period by passing number of seconds. Example:
 
 #### Cache for a week
 ```html
-<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg" width="50" height="50" data-cache="604800"></svg>
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg"
+  data-cache="604800"
+  width="50"
+  height="50"></svg>
 ```
 
 #### Cache for a six hours
 ```html
-<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg" width="50" height="50" data-cache="21600"></svg>
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg"
+  data-cache="21600"
+  width="50"
+  height="50"></svg>
 ```
 
 #### Disable Caching
 ```html
-<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg" width="50" height="50" data-cache="disabled"></svg>
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg"
+  data-cache="disabled"
+  width="50"
+  height="50"></svg>
 ```
 
 ### 2. Enable Javascript
@@ -110,32 +131,94 @@ SVG format supports scripting. However, for security reasons, svg-loader will st
 You can enable it by: 
 
 ```html
-<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg" data-js="enabled" width="50" height="50" fill="red"></svg>
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg"
+  data-js="enabled"
+  onclick="alert('clicked')"
+  width="50"
+  height="50"
+  fill="red"></svg>
 ```
 
 ### 3. Disable Unique IDs, Styling
-To prevent conflicts between conflicting identifiers of different SVGs, svg-loader scopes the identifiers and styling rules, 
-by adding prefixes. 
+To prevent conflicts between conflicting identifiers of different SVGs, svg-loader scopes the identifiers and styling rules by adding prefixes. 
 
 You can disable this behavior by:
 
 #### Disable Unique IDs
 
 ```html
-<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg" data-unique-ids="disabled" width="50" height="50" fill="red"></svg>
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg"
+  data-unique-ids="disabled"
+  width="50"
+  height="50"
+  fill="red"></svg>
 ```
 
 #### Disable CSS Scoping
 
 ```html
-<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg" data-css-scoping="disabled" width="50" height="50" fill="red"></svg>
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg"
+  data-css-scoping="disabled"
+  width="50"
+  height="50"
+  fill="red"></svg>
 ```
 
 ## Lazy Loading
 You can also lazy load icons by using `data-loading=lazy`. This will make icon not load until it's about to enter the viewport. For lazy loading, `external-svg-loader` uses [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API).
 
 ```html
-<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg" width="50" height="50" data-loading="lazy"></svg>
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/heart.svg"
+  data-loading="lazy"
+  width="50"
+  height="50"></svg>
+```
+
+## Event
+When the SVG has been loaded an event `iconload` is triggered. This can be used to get the references to the loaded SVG element and do some further processing. You can also use the `oniconload` inline function. 
+
+### Using `oniconload` inline function
+```html
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg"
+  oniconload="console.log('Icon loaded #1', this)"></svg>
+```
+
+### Using addEventListener
+```html
+<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg"></svg>
+
+<script>
+  window.addEventListener('iconload', (e) => {
+      if (e.target.id === 'iconload') {
+        console.log('Icon loaded #2', e.target);
+      }
+  });
+</script>
+```
+
+### Using Events in React
+React doesn't support custom events out of the box. To circumvent this limitation, you can [refs](https://reactjs.org/docs/refs-and-the-dom.html).
+
+```jsx
+class MyApp extends React.Component {
+  constructor(props) {
+    super(props);
+    this.ref = React.createRef()
+  }
+  render() {
+    return (<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg" ref={this.ref}></svg>);
+  }
+  componentDidMount() {
+    this.ref.current.addEventListener('iconload', () => {
+      console.log("Icon Loaded", this.ref.current)
+    })
+  }
+}
 ```
 
 ## LICENSE

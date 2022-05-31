@@ -2,6 +2,9 @@
     <head>
         <link rel="stylesheet" href="/icons/main.css">
         <style>
+            body {
+                padding-bottom: 80px;
+            }
             .heading {
                 font-weight: bold;
                 margin-top: 16px;
@@ -29,6 +32,20 @@
 
     <div class="heading">Icon over XHR</div>
     <svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg"></svg>
+
+    <div class="heading">Icon load event (see console)</div>
+    <svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg?loadevent=1" oniconload="console.log('Icon loaded #1', this)"></svg>
+
+    <div class="heading">Icon load event [bubble check] (see console)</div>
+    <svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg?loadevent=2" id="iconload"></svg>
+
+    <script>
+        window.addEventListener('iconload', (e) => {
+            if (e.target.id === 'iconload') {
+                console.log('Icon loaded #2', e.target);
+            }
+        });
+    </script>
 
     <div class="heading">Icon over XHR (no caching)</div>
     <svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg?cache=disabled" fill="red" data-cache="disabled"></svg>
@@ -59,6 +76,48 @@
 
     <div class="heading">Icon with ID (Disabled uniqueifying)</div>
     <svg data-src="/icons/svg-file-id-4.svg" data-unique-ids="disabled"></svg>
+
+    <div class="heading">Icon Load Using React</div>
+    <div id="reactIcon">
+    </div>
+
+    <div class="heading">Icon Load Using React (Event Handling)</div>
+    <div id="reactIconLoad">
+    </div>
     
     <script src="./dist/svg-loader.js" type="text/javascript"></script>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <div id="root"></div>
+    <script type="text/babel">
+      const container = document.getElementById('reactIcon');
+      const containerLoadEvent = document.getElementById('reactIconLoad');
+      
+      const root = ReactDOM.createRoot(container);
+      const rootLoadEvent = ReactDOM.createRoot(containerLoadEvent);
+
+
+      class MyApp extends React.Component {
+        constructor(props) {
+            super(props);
+            this.ref = React.createRef()
+        }
+        render() {
+            return (<svg data-src="/icons/cog-with-script.svg" ref={this.ref}></svg>);
+        }
+        componentDidMount() {
+            this.ref.current.addEventListener('iconload', () => {
+                console.log("Icon Loaded #3", this.ref.current)
+            })
+        }
+      }
+
+      root.render(<svg data-src="/icons/cog-with-script.svg"></svg>);
+      rootLoadEvent.render(<MyApp></MyApp>);
+    </script>
 </html>
