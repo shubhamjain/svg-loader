@@ -1,5 +1,5 @@
 {
-    "name": "external-svg-loader",
+    "name": "@localazy/svg-loader",
     "license": "MIT",
     "description": "Plug 'n play external SVG loader",
     "homepage": "https://github.com/shubhamjain/svg-loader",
@@ -26,6 +26,6 @@
         "webpack-cli": "^4.9.2"
     },
     "dependencies": {
-        "idb-keyval": "^3.2.0"
+        "@sifrr/storage": "^0.0.9"
     }
 }

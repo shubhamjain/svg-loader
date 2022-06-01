@@ -1,13 +1,24 @@
 "use strict";
 
-const { get, set, del } = require("idb-keyval");
+const Storage = require('@sifrr/storage');
 const cssScope = require("./lib/scope-css");
 const cssUrlFixer = require("./lib/css-url-fixer");
 const counter = require("./lib/counter");
 
+let options = {
+    priority: ['indexeddb', 'websql', 'localstorage', 'jsonstorage'], // Priority Array of type of storages to use
+    name: 'svg-loader-cache', // name of table (treat this as a variable name, i.e. no Spaces or special characters allowed)
+    version: 1, // version number (integer / float / string), 1 is treated same as '1'
+    desciption: 'SVG Loader Cache', // description (text)
+    size: 5 * 1024 * 1024, // Max db size in bytes only for websql (integer)
+    ttl: 0 // Time to live/expire for data in table (in ms), 0 = forever, data will expire ttl ms after saving
+  };
+
+storage = Storage.getStorage(options);
+
 const isCacheAvailable = async (url) => {
     try {
-        let item = await get(`loader_${url}`);
+        let item = await storage.get(`loader_${url}`);
 
         if (!item) {
             return;
@@ -18,7 +29,7 @@ const isCacheAvailable = async (url) => {
         if (Date.now() < item.expiry) {
             return item.data;
         } else {
-            del(`loader_${url}`);
+            storage.del(`loader_${url}`);
             return;
         }
     } catch (e) {
@@ -30,7 +41,7 @@ const setCache = async (url, data, cacheOpt) => {
     try {
         const cacheExp = parseInt(cacheOpt, 10);
         
-        await set(`loader_${url}`, JSON.stringify({
+        await storage.set(`loader_${url}`, JSON.stringify({
             data,
             expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp)
         }));
