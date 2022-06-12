@@ -323,11 +323,19 @@ if (globalThis.addEventListener) {
         renderAllSVGs();
     }, 100);
 
-    globalThis.addEventListener("DOMContentLoaded", () => {
+    function init() {
         clearInterval(intervalCheck);
     
         renderAllSVGs();
         addObservers();
-    });
+    }
+
+    if (document.readyState === 'interactive') {
+        init();
+    } else {
+        globalThis.addEventListener("DOMContentLoaded", () => {
+            init();
+        });
+    }
 }
 
