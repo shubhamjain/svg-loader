@@ -26,6 +26,6 @@
         "webpack-cli": "^4.9.2"
     },
     "dependencies": {
-        "idb-keyval": "^3.2.0"
+        "idb-keyval": "^6.2.0"
     }
 }
