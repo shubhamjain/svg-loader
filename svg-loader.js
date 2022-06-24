@@ -6,37 +6,47 @@ const cssUrlFixer = require("./lib/css-url-fixer");
 const counter = require("./lib/counter");
 
 const isCacheAvailable = async (url) => {
+    let item;
+
     try {
-        let item = await get(`loader_${url}`);
+        item = await get(`loader_${url}`);
+    } catch (e) {}
 
-        if (!item) {
-            return;
-        }
+    if (!item) {
+        try {
+            item = localStorage.getItem(`loader_${url}`);
+        } catch(e) {}
+    }
 
-        item = JSON.parse(item);
+    if (!item) {
+        return;
+    }
 
-        if (Date.now() < item.expiry) {
-            return item.data;
-        } else {
-            del(`loader_${url}`);
-            return;
-        }
-    } catch (e) {
+    item = JSON.parse(item);
+
+    if (Date.now() < item.expiry) {
+        return item.data;
+    } else {
+        del(`loader_${url}`);
         return;
     }
 };
 
 const setCache = async (url, data, cacheOpt) => {
-    try {
-        const cacheExp = parseInt(cacheOpt, 10);
-        
-        await set(`loader_${url}`, JSON.stringify({
-            data,
-            expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp)
-        }));
+    const cacheExp = parseInt(cacheOpt, 10);
+    const dataToSet =  JSON.stringify({
+        data,
+        expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp)
+    });
 
+    try {
+        await set(`loader_${url}`, dataToSet);
     } catch (e) {
-        console.error(e);
+        try {
+            localStorage.setItem(`loader_${url}`, dataToSet)
+        } catch (e) {
+            console.warn("Failed to set cache: ", e)
+        }
     };
 };
 
