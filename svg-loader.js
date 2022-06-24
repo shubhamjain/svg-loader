@@ -164,14 +164,15 @@ const renderBody = (elem, options, body) => {
         // Here we are recycling a rarely used GlobalEventHandler 'onloadedmetadata'
         // and offloading the execution to the browser. This is a hack, but because
         // the event doesn't bubble, it shouldn't affect anything else in the code. 
-        elem.setAttribute('onloadedmetadata', elem.getAttribute('oniconload'));
+        elem.setAttribute('onauxclick', elem.getAttribute('oniconload'));
         
-        const event = new CustomEvent('loadedmetadata', {
-            bubbles: false
+        const event = new CustomEvent('auxclick', {
+            bubbles: false,
+            view: window
         });
         elem.dispatchEvent(event);
 
-        elem.removeAttribute('onloadedmetadata');
+        elem.removeAttribute('onauxclick');
     }
 };
 
