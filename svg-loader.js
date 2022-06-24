@@ -1,6 +1,6 @@
 "use strict";
 
-const { get, set, del } = require("idb-keyval");
+const { get, set, del, entries } = require("idb-keyval");
 const cssScope = require("./lib/scope-css");
 const cssUrlFixer = require("./lib/css-url-fixer");
 const counter = require("./lib/counter");
@@ -36,7 +36,7 @@ const setCache = async (url, data, cacheOpt) => {
     const cacheExp = parseInt(cacheOpt, 10);
     const dataToSet =  JSON.stringify({
         data,
-        expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp)
+        expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 * 30 : cacheExp)
     });
 
     try {
@@ -350,3 +350,23 @@ if (globalThis.addEventListener) {
     }
 }
 
+globalThis.SVGLoader = {}
+globalThis.SVGLoader.destoryCache = async () => {
+    // Handle error, "mutation operation was attempted on a database"
+    // with try-catch
+    try {
+        const entriesCache = await entries();
+        
+        for (const entry of entriesCache) {
+            if (entry[0].startsWith('loader_')) {
+                await del(entry[0]);
+            }
+        }
+    } catch(e) {}
+
+    Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('loader_')) {
+            localStorage.removeItem(key);
+        }
+    });
+}
