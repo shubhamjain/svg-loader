@@ -101,7 +101,7 @@ By default, the XHR response is cached for 30 days, so that any subsequent loads
 You can destroy the currently stored cache by calling:
 
 ```js
-SVGLoader.destoryCache();
+SVGLoader.destroyCache();
 ```
 
 You can also modify the caching period by passing number of seconds. Example:

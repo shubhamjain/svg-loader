@@ -351,7 +351,7 @@ if (globalThis.addEventListener) {
 }
 
 globalThis.SVGLoader = {}
-globalThis.SVGLoader.destoryCache = async () => {
+globalThis.SVGLoader.destroyCache = async () => {
     // Handle error, "mutation operation was attempted on a database"
     // with try-catch
     try {
