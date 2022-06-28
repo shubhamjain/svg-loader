@@ -9,7 +9,7 @@
         "url": "https://github.com/shubhamjain/svg-loader.git"
     },
     "main": "dist/svg-loader.min.js",
-    "version": "1.5.2",
+    "version": "1.6.0",
     "scripts": {
         "build:js": "NODE_ENV=production webpack build",
         "build:cp": "cp ./dist/svg-loader.min.js ./svg-loader.min.js",
@@ -26,6 +26,6 @@
         "webpack-cli": "^4.9.2"
     },
     "dependencies": {
-        "idb-keyval": "^3.2.0"
+        "idb-keyval": "^6.2.0"
     }
 }

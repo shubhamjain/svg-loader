@@ -1,42 +1,52 @@
 "use strict";
 
-const { get, set, del } = require("idb-keyval");
+const { get, set, del, entries } = require("idb-keyval");
 const cssScope = require("./lib/scope-css");
 const cssUrlFixer = require("./lib/css-url-fixer");
 const counter = require("./lib/counter");
 
 const isCacheAvailable = async (url) => {
+    let item;
+
     try {
-        let item = await get(`loader_${url}`);
+        item = await get(`loader_${url}`);
+    } catch (e) {}
 
-        if (!item) {
-            return;
-        }
+    if (!item) {
+        try {
+            item = localStorage.getItem(`loader_${url}`);
+        } catch(e) {}
+    }
 
-        item = JSON.parse(item);
+    if (!item) {
+        return;
+    }
 
-        if (Date.now() < item.expiry) {
-            return item.data;
-        } else {
-            del(`loader_${url}`);
-            return;
-        }
-    } catch (e) {
+    item = JSON.parse(item);
+
+    if (Date.now() < item.expiry) {
+        return item.data;
+    } else {
+        del(`loader_${url}`);
         return;
     }
 };
 
 const setCache = async (url, data, cacheOpt) => {
-    try {
-        const cacheExp = parseInt(cacheOpt, 10);
-        
-        await set(`loader_${url}`, JSON.stringify({
-            data,
-            expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 : cacheExp)
-        }));
+    const cacheExp = parseInt(cacheOpt, 10);
+    const dataToSet =  JSON.stringify({
+        data,
+        expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 * 30 : cacheExp)
+    });
 
+    try {
+        await set(`loader_${url}`, dataToSet);
     } catch (e) {
-        console.error(e);
+        try {
+            localStorage.setItem(`loader_${url}`, dataToSet)
+        } catch (e) {
+            console.warn("Failed to set cache: ", e)
+        }
     };
 };
 
@@ -164,14 +174,15 @@ const renderBody = (elem, options, body) => {
         // Here we are recycling a rarely used GlobalEventHandler 'onloadedmetadata'
         // and offloading the execution to the browser. This is a hack, but because
         // the event doesn't bubble, it shouldn't affect anything else in the code. 
-        elem.setAttribute('onloadedmetadata', elem.getAttribute('oniconload'));
+        elem.setAttribute('onauxclick', elem.getAttribute('oniconload'));
         
-        const event = new CustomEvent('loadedmetadata', {
-            bubbles: false
+        const event = new CustomEvent('auxclick', {
+            bubbles: false,
+            view: window
         });
         elem.dispatchEvent(event);
 
-        elem.removeAttribute('onloadedmetadata');
+        elem.removeAttribute('onauxclick');
     }
 };
 
@@ -339,3 +350,23 @@ if (globalThis.addEventListener) {
     }
 }
 
+globalThis.SVGLoader = {}
+globalThis.SVGLoader.destroyCache = async () => {
+    // Handle error, "mutation operation was attempted on a database"
+    // with try-catch
+    try {
+        const entriesCache = await entries();
+        
+        for (const entry of entriesCache) {
+            if (entry[0].startsWith('loader_')) {
+                await del(entry[0]);
+            }
+        }
+    } catch(e) {}
+
+    Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('loader_')) {
+            localStorage.removeItem(key);
+        }
+    });
+}

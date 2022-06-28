@@ -96,8 +96,15 @@ SVG loader can also be included via unpkg CDN. Example:
 ## Configuration
 
 ### 1. Disable/Modify Caching
-By default, the XHR response is cached for 24 hours, so that any subsequent loads are instantenous. You can disable this behavior by passing `data-cache="disabled"`. You can also modify
-the caching period by passing number of seconds. Example:
+By default, the XHR response is cached for 30 days, so that any subsequent loads are instantenous. You can disable this behavior by passing `data-cache="disabled"`. 
+
+You can destroy the currently stored cache by calling:
+
+```js
+SVGLoader.destroyCache();
+```
+
+You can also modify the caching period by passing number of seconds. Example:
 
 #### Cache for a week
 ```html
