@@ -481,50 +481,53 @@ const renderBody = (elem, options, body) => {
         });
     }
 
-    Array.from(doc.querySelectorAll("*")).forEach((elem) => {
+    Array.from(doc.querySelectorAll("*")).forEach((el) => {
         // Unless explicitly set, remove JS code (default)
-        if (elem.tagName === "script") {
+        if (el.tagName === "script") {
+            el.remove();
             if (!enableJs) {
-                elem.remove();
                 return;
             } else {
                 const scriptEl = document.createElement("script");
-                scriptEl.innerHTML = elem.innerHTML;
-                document.body.appendChild(scriptEl);
+                scriptEl.appendChild(el.childNodes[0]);
+                elem.appendChild(scriptEl)
             }
         }
 
-        for (let i = 0; i < elem.attributes.length; i++) {
+        const attributesToRemove = []
+        for (let i = 0; i < el.attributes.length; i++) {
             const {
                 name,
                 value
-            } = elem.attributes[i];
+            } = el.attributes[i];
 
             const newValue = cssUrlFixer(idMap, value, name);
 
             if (value !== newValue) {
-                elem.setAttribute(name, newValue);
+                el.setAttribute(name, newValue);
             }
 
             // Remove event functions: onmouseover, onclick ... unless specifically enabled
             if (eventNames.includes(name.toLowerCase()) && !enableJs) {
-                elem.removeAttribute(name);
+                attributesToRemove.push(name);
                 continue;
             }
 
             // Remove "javascript:..." unless specifically enabled
             if (["href", "xlink:href"].includes(name) && value.startsWith("javascript") && !enableJs) {
-                elem.removeAttribute(name);
+                attributesToRemove.push(name);
             }
         }
 
+        attributesToRemove.forEach((attr) => el.removeAttribute(attr))
+
         // .first -> [data-id="svg_loader_341xx"] .first
         // Makes sure that class names don't conflict with each other.
-        if (elem.tagName === "style" && !disableCssScoping) {
-            let newValue = cssScope(elem.innerHTML, `[data-id="${elemUniqueId}"]`, idMap);
+        if (el.tagName === "style" && !disableCssScoping) {
+            let newValue = cssScope(el.innerHTML, `[data-id="${elemUniqueId}"]`, idMap);
             newValue = cssUrlFixer(idMap, newValue);
-            if (newValue !== elem.innerHTML)
-                elem.innerHTML = newValue;
+            if (newValue !== el.innerHTML)
+                el.innerHTML = newValue;
         }
     });
 
