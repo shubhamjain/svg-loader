@@ -115,22 +115,188 @@ module.exports = (css, prefix, idMap) => {
 
 /***/ }),
 
-/***/ "./node_modules/@sifrr/storage/dist/sifrr.storage.min.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/@sifrr/storage/dist/sifrr.storage.min.js ***!
-  \***************************************************************/
-/***/ (function() {
+/***/ "./lib/storage/index.js":
+/*!******************************!*\
+  !*** ./lib/storage/index.js ***!
+  \******************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/*! Sifrr.Storage v0.0.9 - sifrr project | MIT licensed | https://github.com/sifrr/sifrr */
-this.Sifrr=this.Sifrr||{},this.Sifrr.Storage=function(t){"use strict";var e=Object.prototype.toString,r="~SS%l3g5k3~";function s(t){var e=t;if("string"==typeof t)try{e=t=JSON.parse(t)}catch(t){// do nothing
-}if("string"==typeof t&&t.indexOf(r)>0){var[n,i,a]=t.split(r);e="ArrayBuffer"===n?new Uint8Array(i.split(",").map(t=>parseInt(t))).buffer:"Blob"===n?function(t,e){return new Blob([new Uint8Array(t.split(",")).buffer],{type:e})}(a,i):new window[n](i.split(","))}else if(Array.isArray(t))e=[],t.forEach((t,r)=>{e[r]=s(t)});else if("object"==typeof t){if(null===t)return null;for(var o in e={},t)e[o]=s(t[o])}return e}function n(t){if("object"!=typeof t)return JSON.stringify(t);if(null===t)return"null";if(Array.isArray(t))return JSON.stringify(t.map(t=>n(t)));var s=e.call(t).slice(8,-1);if("Object"===s){var i={};for(var a in t)i[a]=n(t[a]);return JSON.stringify(i)}return"ArrayBuffer"===s?t=new Uint8Array(t):"Blob"===s&&(t=t.type+r+function(t){var e=URL.createObjectURL(t),r=new XMLHttpRequest;r.open("GET",e,!1),r.send(),URL.revokeObjectURL(e);for(var s=new Uint8Array(r.response.length),n=0;n<r.response.length;++n)s[n]=r.response.charCodeAt(n);return s.toString()}(t)),s+r+t.toString()}
-// always bind to storage
-var i=(t,e)=>{var r=Date.now();return Object.keys(t).forEach(s=>{if(void 0!==t[s]){var{createdAt:n,ttl:i}=t[s];t[s]=t[s]&&t[s].value,0!==i&&r-n>i&&(delete t[s],e&&e(s))}}),t},a=(t,e)=>t&&t.value?(t.ttl=t.ttl||e,t.createdAt=Date.now(),t):{value:t,ttl:e,createdAt:Date.now()},o=(t,e,r)=>{if("string"==typeof t)return{[t]:a(e,r)};var s={};return Object.keys(t).forEach(e=>s[e]=a(t[e],r)),s},c=t=>Array.isArray(t)?t:[t],l={name:"SifrrStorage",version:1,description:"Sifrr Storage",size:5242880,ttl:0};class u{constructor(t=l){this.type=this.constructor.type,this.table={},Object.assign(this,l,t),this.tableName=this.name+this.version}// overwrited methods
-select(t){var e=this.getStore(),r={};return t.forEach(t=>r[t]=e[t]),r}upsert(t){var e=this.getStore();for(var r in t)e[r]=t[r];return this.setStore(e),!0}delete(t){var e=this.getStore();return t.forEach(t=>delete e[t]),this.setStore(e),!0}deleteAll(){return this.setStore({}),!0}getStore(){return this.table}setStore(t){this.table=t}keys(){return Promise.resolve(this.getStore()).then(t=>Object.keys(t))}all(){return Promise.resolve(this.getStore()).then(t=>i(t,this.del.bind(this)))}get(t){return Promise.resolve(this.select(c(t))).then(t=>i(t,this.del.bind(this)))}set(t,e){return Promise.resolve(this.upsert(o(t,e,this.ttl)))}del(t){return Promise.resolve(this.delete(c(t)))}clear(){return Promise.resolve(this.deleteAll())}memoize(t,e=((...t)=>"string"==typeof t[0]?t[0]:n(t[0]))){return(...r)=>{var s=e(...r);return this.get(s).then(e=>{if(void 0===e[s]||null===e[s]){var n=t(...r);if(!(n instanceof Promise))throw Error("Only promise returning functions can be memoized");return n.then(t=>this.set(s,t).then(()=>t))}return e[s]})}}isSupported(t=!0){return!(!t||"undefined"!=typeof window&&"undefined"!=typeof document)||!(!window||!this.hasStore())}hasStore(){return!0}isEqual(t){return this.tableName==t.tableName&&this.type==t.type}// aliases
-static stringify(t){return n(t)}static parse(t){return s(t)}static _add(t){this._all=this._all||[],this._all.push(t)}static _matchingInstance(t){for(var e=this._all||[],r=e.length,s=0;s<r;s++)if(e[s].isEqual(t))return e[s];return this._add(t),t}}class h extends u{constructor(t){return super(t),this.constructor._matchingInstance(this)}select(t){var e={},r=[];return t.forEach(t=>r.push(this._tx("readonly","get",t,void 0).then(r=>e[t]=r))),Promise.all(r).then(()=>e)}upsert(t){var e=[];for(var r in t)e.push(this._tx("readwrite","put",t[r],r));return Promise.all(e).then(()=>!0)}delete(t){var e=[];return t.forEach(t=>e.push(this._tx("readwrite","delete",t,void 0))),Promise.all(e).then(()=>!0)}deleteAll(){return this._tx("readwrite","clear",void 0,void 0)}_tx(t,e,r,s){var n=this;return this.store=this.store||this.createStore(n.tableName),this.store.then(i=>new Promise((a,o)=>{var c=i.transaction(n.tableName,t).objectStore(n.tableName),l=c[e].call(c,r,s);l.onsuccess=t=>a(t.target.result),l.onerror=t=>o(t.error)}))}getStore(){return this._tx("readonly","getAllKeys",void 0,void 0).then(this.select.bind(this))}createStore(t){return new Promise((e,r)=>{var s=window.indexedDB.open(t,1);s.onupgradeneeded=()=>{s.result.createObjectStore(t)},s.onsuccess=()=>e(s.result),s.onerror=()=>r(s.error)})}hasStore(){return!!window.indexedDB}static get type(){return"indexeddb"}}class p extends u{constructor(t){return super(t),this.constructor._matchingInstance(this)}parsedData(){}select(t){var e=t.map(()=>"?").join(", ");// Need to give array for ? values in executeSql's 2nd argument
-return this.execSql("SELECT key, value FROM ".concat(this.tableName," WHERE key in (").concat(e,")"),t)}upsert(t){return this.getWebsql().transaction(e=>{for(var r in t)e.executeSql("INSERT OR REPLACE INTO ".concat(this.tableName,"(key, value) VALUES (?, ?)"),[r,this.constructor.stringify(t[r])])}),!0}delete(t){var e=t.map(()=>"?").join(", ");return this.execSql("DELETE FROM ".concat(this.tableName," WHERE key in (").concat(e,")"),t),!0}deleteAll(){return this.execSql("DELETE FROM ".concat(this.tableName)),!0}getStore(){return this.execSql("SELECT key, value FROM ".concat(this.tableName))}hasStore(){return!!window.openDatabase}getWebsql(){return this._store?this._store:(this._store=window.openDatabase("ss",1,this.description,this.size),this.execSql("CREATE TABLE IF NOT EXISTS ".concat(this.tableName," (key unique, value)")),this._store)}execSql(t,e=[]){var r=this;return new Promise(s=>{r.getWebsql().transaction((function(n){n.executeSql(t,e,(t,e)=>{s(r.parseResults(e))})}))})}parseResults(t){for(var e={},r=t.rows.length,s=0;s<r;s++)e[t.rows.item(s).key]=this.constructor.parse(t.rows.item(s).value);return e}static get type(){return"websql"}}class d extends u{constructor(t){return super(t),this.constructor._matchingInstance(this)}select(t){var e={};return t.forEach(t=>{var r=this.constructor.parse(this.getLocalStorage().getItem(this.tableName+"/"+t));null!==r&&(e[t]=r)}),e}upsert(t){for(var e in t)this.getLocalStorage().setItem(this.tableName+"/"+e,this.constructor.stringify(t[e]));return!0}delete(t){return t.map(t=>this.getLocalStorage().removeItem(this.tableName+"/"+t)),!0}deleteAll(){return Object.keys(this.getLocalStorage()).forEach(t=>{0===t.indexOf(this.tableName)&&this.getLocalStorage().removeItem(t)}),!0}getStore(){return this.select(Object.keys(this.getLocalStorage()).map(t=>{if(0===t.indexOf(this.tableName))return t.slice(this.tableName.length+1)}).filter(t=>void 0!==t))}getLocalStorage(){return window.localStorage}hasStore(){return!!window.localStorage}static get type(){return"localstorage"}}var f=new Date(0).toUTCString(),g="%3D",S=new RegExp(g,"g");class v extends u{constructor(t){return super(t),this.constructor._matchingInstance(this)}upsert(t){for(var e in t)this.setStore("".concat(this.tableName,"/").concat(e,"=").concat(this.constructor.stringify(t[e]).replace(/=/g,g),"; path=/"));return!0}delete(t){return t.forEach(t=>this.setStore("".concat(this.tableName,"/").concat(t,"=; expires=").concat(f,"; path=/"))),!0}deleteAll(){return this.keys().then(this.delete.bind(this))}getStore(){var t=document.cookie,e={};return t.split("; ").forEach(t=>{var[r,s]=t.split("=");0===r.indexOf(this.tableName)&&(e[r.slice(this.tableName.length+1)]=this.constructor.parse(s.replace(S,"=")))}),e}setStore(t){document.cookie=t}hasStore(){return void 0!==document.cookie}static get type(){return"cookies"}}class y extends u{constructor(t){return super(t),this.constructor._matchingInstance(this)}hasStore(){return!0}static get type(){return"jsonstorage"}}var m={[h.type]:h,[p.type]:p,[d.type]:d,[v.type]:v,[y.type]:y};return t.Cookies=v,t.IndexedDB=h,t.JsonStorage=y,t.LocalStorage=d,t.WebSQL=p,t.availableStores=m,t.getStorage=function(t){return function(t=[],e={}){t=t.concat([h.type,p.type,d.type,v.type,y.type]);for(var r=0;r<t.length;r++){var s=m[t[r]];if(s){var n=new s(e);if(n.isSupported())return n}}throw Error("No compatible storage found. Available types: "+Object.keys(m).join(", ")+".")}("string"==typeof t?[t]:(t||{}).priority,"string"==typeof t?{}:t)},t.default&&(t=t.default),t}({});
-/*! (c) @aadityataparia */
+"use strict";
 
+const localStorage = __webpack_require__(/*! ./local-storage */ "./lib/storage/local-storage.js");
+const indexedDB = __webpack_require__(/*! ./indexed-db */ "./lib/storage/indexed-db.js");
+const mockStorage = __webpack_require__(/*! ./mock-storage */ "./lib/storage/mock-storage.js");
+
+let storage = null;
+
+const getAvailableStorage = async (name) => {
+  if (await indexedDB.hasStorage(name)) {
+    return indexedDB.getStorage(name)
+  }
+  else if (await localStorage.hasStorage()) {
+    return localStorage.getStorage(name)
+  }
+  return mockStorage.getStorage()
+}
+
+
+const getStorage = async (name) => {
+  return storage || await getAvailableStorage(name)
+}
+
+module.exports = {
+  getStorage,
+}
+
+/***/ }),
+
+/***/ "./lib/storage/indexed-db.js":
+/*!***********************************!*\
+  !*** ./lib/storage/indexed-db.js ***!
+  \***********************************/
+/***/ ((module) => {
+
+let db = null;
+
+/**
+ * Work around Safari 14 IndexedDB open bug.
+ *
+ * Safari has a horrible bug where IDB requests can hang while the browser is starting up. https://bugs.webkit.org/show_bug.cgi?id=226547
+ * The only solution is to keep nudging it until it's awake.
+ */
+const idbReady = () => {
+  const isSafari =
+    !navigator.userAgentData &&
+    /Safari\//.test(navigator.userAgent) &&
+    !/Chrom(e|ium)\//.test(navigator.userAgent);
+
+  // No point putting other browsers or older versions of Safari through this mess.
+  if (!isSafari || !indexedDB.databases) return Promise.resolve();
+
+  let intervalId;
+
+  return new Promise((resolve) => {
+    const tryIdb = () => indexedDB.databases().finally(resolve);
+    intervalId = setInterval(tryIdb, 100);
+    tryIdb();
+  }).finally(() => clearInterval(intervalId));
+}
+
+const openDBConnection = async (name) => {
+  try {
+    await idbReady(name);
+    return createStore(name);
+  }
+  catch (e) {
+    console.log("cannot create store");
+  }
+}
+
+const getObjectStore = async (name, mode = "readonly") => {
+  db = db || await openDBConnection(name);
+  const transaction = await db.transaction([name], mode);
+  return transaction.objectStore(name);
+}
+
+const createStore = (name) => {
+  return new Promise((resolve, reject) => {
+    const request = window.indexedDB.open(name, 1);
+    request.onupgradeneeded = () => {
+      request.result.createObjectStore(name);
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+const transaction = async (name, method, mode, value, key) => {
+  const objectStore = await getObjectStore(name, mode)
+  return new Promise((resolve, reject) => {
+    const request = objectStore[method](value, key)
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+
+module.exports = {
+  getStorage: (name) => {
+    return ({
+      async get(key) {
+        return transaction(name, "get", "readonly", key);
+      },
+      async set(key, value) {
+        return transaction(name, "put", "readwrite", value, key)
+      },
+      async del(key) {
+        return transaction(name, "delete", "readwrite", key);
+      },
+
+    })
+  },
+  hasStorage: async (name) => {
+    if (indexedDB) {
+      try {
+        await getObjectStore(name)
+        return true;
+      }
+      catch { }
+    }
+    return false;
+  },
+};
+
+/***/ }),
+
+/***/ "./lib/storage/local-storage.js":
+/*!**************************************!*\
+  !*** ./lib/storage/local-storage.js ***!
+  \**************************************/
+/***/ ((module) => {
+
+module.exports = {
+  getStorage: () => {
+    return ({
+      get(key) {
+        return JSON.parse(localStorage.getItem(key));
+      },
+      set(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+      },
+      del(key) {
+        localStorage.removeItem(key);
+      },
+    });
+  },
+  hasStorage: async () => {
+    try {
+      localStorage.setItem('test', 'test');
+      localStorage.removeItem('test');
+      return true;
+    } catch (e) {
+      return false;
+    }
+
+  },
+};
+
+/***/ }),
+
+/***/ "./lib/storage/mock-storage.js":
+/*!*************************************!*\
+  !*** ./lib/storage/mock-storage.js ***!
+  \*************************************/
+/***/ ((module) => {
+
+module.exports = {
+  getStorage: () => {
+    return ({
+      get() { },
+      set() { },
+      del() { }
+    });
+  }
+};
 
 /***/ })
 
@@ -154,7 +320,7 @@ return this.execSql("SELECT key, value FROM ".concat(this.tableName," WHERE key 
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -170,31 +336,23 @@ var __webpack_exports__ = {};
   \***********************/
 
 
-const { Storage } = (__webpack_require__(/*! @sifrr/storage */ "./node_modules/@sifrr/storage/dist/sifrr.storage.min.js").Sifrr);
 const cssScope = __webpack_require__(/*! ./lib/scope-css */ "./lib/scope-css.js");
 const cssUrlFixer = __webpack_require__(/*! ./lib/css-url-fixer */ "./lib/css-url-fixer.js");
 const counter = __webpack_require__(/*! ./lib/counter */ "./lib/counter.js");
+const {getStorage} = __webpack_require__(/*! ./lib/storage */ "./lib/storage/index.js");
 
-let options = {
-  priority: ["indexeddb", "websql", "localstorage", "jsonstorage"], // Priority Array of type of storages to use
-  name: "svg-loader-cache", // name of table (treat this as a variable name, i.e. no Spaces or special characters allowed)
-  version: 1, // version number (integer / float / string), 1 is treated same as '1'
-  desciption: "SVG Loader Cache", // description (text)
-  size: 5 * 1024 * 1024, // Max db size in bytes only for websql (integer)
-  ttl: 0, // Time to live/expire for data in table (in ms), 0 = forever, data will expire ttl ms after saving
-};
+const STORAGE_NAME = "svg-loader-cache";
 
-const storage = Storage.getStorage(options);
+
 
 const isCacheAvailable = async (url) => {
   try {
+    const storage = await getStorage(STORAGE_NAME);
     let item = await storage.get(`loader_${url}`);
 
     if (!item) {
       return;
     }
-
-    item = JSON.parse(item);
 
     if (Date.now() < item.expiry) {
       return item.data;
@@ -209,6 +367,7 @@ const isCacheAvailable = async (url) => {
 
 const setCache = async (url, data, cacheOpt) => {
   try {
+    const storage = await getStorage(STORAGE_NAME);
     const cacheExp = parseInt(cacheOpt, 10);
 
     await storage.set(
@@ -435,7 +594,7 @@ const renderIcon = async (elem) => {
 
 let intObserver;
 if (globalThis.IntersectionObserver) {
-  const intObserver = new IntersectionObserver(
+  intObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {

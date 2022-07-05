@@ -7,11 +7,6 @@
   "resolved" "https://registry.npmjs.org/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz"
   "version" "0.5.7"
 
-"@sifrr/storage@^0.0.9":
-  "integrity" "sha512-3oOQrBhmanhE3IVe8dzSF1X69Nlp7uaK2vjjYZ+xuGuge02JXUucauXg+6P3BR9AskAyZGBXLD7B9W+FskK+KA=="
-  "resolved" "https://registry.npmjs.org/@sifrr/storage/-/storage-0.0.9.tgz"
-  "version" "0.0.9"
-
 "@types/eslint-scope@^3.7.3":
   "integrity" "sha512-PB3ldyrcnAicT35TWPs5IcwKD8S333HMaa2VVv4+wdvebJkjWuW/xESoB8IwRcog8HYVYamb1g/R31Qv5Bx03g=="
   "resolved" "https://registry.npmjs.org/@types/eslint-scope/-/eslint-scope-3.7.3.tgz"

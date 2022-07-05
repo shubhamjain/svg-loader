@@ -1,30 +1,22 @@
 "use strict";
 
-const { Storage } = require("@sifrr/storage").Sifrr;
 const cssScope = require("./lib/scope-css");
 const cssUrlFixer = require("./lib/css-url-fixer");
 const counter = require("./lib/counter");
+const {getStorage} = require("./lib/storage");
 
-let options = {
-  priority: ["indexeddb", "websql", "localstorage", "jsonstorage"], // Priority Array of type of storages to use
-  name: "svg-loader-cache", // name of table (treat this as a variable name, i.e. no Spaces or special characters allowed)
-  version: 1, // version number (integer / float / string), 1 is treated same as '1'
-  desciption: "SVG Loader Cache", // description (text)
-  size: 5 * 1024 * 1024, // Max db size in bytes only for websql (integer)
-  ttl: 0, // Time to live/expire for data in table (in ms), 0 = forever, data will expire ttl ms after saving
-};
+const STORAGE_NAME = "svg-loader-cache";
 
-const storage = Storage.getStorage(options);
+
 
 const isCacheAvailable = async (url) => {
   try {
+    const storage = await getStorage(STORAGE_NAME);
     let item = await storage.get(`loader_${url}`);
 
     if (!item) {
       return;
     }
-
-    item = JSON.parse(item);
 
     if (Date.now() < item.expiry) {
       return item.data;
@@ -39,6 +31,7 @@ const isCacheAvailable = async (url) => {
 
 const setCache = async (url, data, cacheOpt) => {
   try {
+    const storage = await getStorage(STORAGE_NAME);
     const cacheExp = parseInt(cacheOpt, 10);
 
     await storage.set(
@@ -265,7 +258,7 @@ const renderIcon = async (elem) => {
 
 let intObserver;
 if (globalThis.IntersectionObserver) {
-  const intObserver = new IntersectionObserver(
+  intObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
