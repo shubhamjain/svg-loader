@@ -3,7 +3,7 @@
 const cssScope = require("./lib/scope-css");
 const cssUrlFixer = require("./lib/css-url-fixer");
 const counter = require("./lib/counter");
-const {getStorage} = require("./lib/storage");
+const { getStorage } = require("./lib/storage");
 
 const STORAGE_NAME = "svg-loader-cache";
 
@@ -17,6 +17,8 @@ const isCacheAvailable = async (url) => {
     if (!item) {
       return;
     }
+
+    item = JSON.parse(item);
 
     if (Date.now() < item.expiry) {
       return item.data;

@@ -339,7 +339,7 @@ var __webpack_exports__ = {};
 const cssScope = __webpack_require__(/*! ./lib/scope-css */ "./lib/scope-css.js");
 const cssUrlFixer = __webpack_require__(/*! ./lib/css-url-fixer */ "./lib/css-url-fixer.js");
 const counter = __webpack_require__(/*! ./lib/counter */ "./lib/counter.js");
-const {getStorage} = __webpack_require__(/*! ./lib/storage */ "./lib/storage/index.js");
+const { getStorage } = __webpack_require__(/*! ./lib/storage */ "./lib/storage/index.js");
 
 const STORAGE_NAME = "svg-loader-cache";
 
@@ -353,6 +353,8 @@ const isCacheAvailable = async (url) => {
     if (!item) {
       return;
     }
+
+    item = JSON.parse(item);
 
     if (Date.now() < item.expiry) {
       return item.data;
