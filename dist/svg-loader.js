@@ -641,7 +641,7 @@ const renderIcon = async (elem) => {
 
 let intObserver;
 if (globalThis.IntersectionObserver) {
-    const intObserver = new IntersectionObserver(
+    intObserver = new IntersectionObserver(
         (entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
@@ -760,6 +760,7 @@ globalThis.SVGLoader.destroyCache = async () => {
         }
     });
 }
+
 })();
 
 /******/ })()
