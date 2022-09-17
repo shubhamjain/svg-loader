@@ -12,7 +12,7 @@ const STORAGE_NAME = "svg-loader-cache";
 const isCacheAvailable = async (url) => {
   try {
     const storage = await getStorage(STORAGE_NAME);
-    let item = await storage.get(`loader_${url}`);
+    let item = await storage.getItem(`loader_${url}`);
 
     if (!item) {
       return;
@@ -23,7 +23,7 @@ const isCacheAvailable = async (url) => {
     if (Date.now() < item.expiry) {
       return item.data;
     } else {
-      storage.del(`loader_${url}`);
+      storage.removeItem(`loader_${url}`);
       return;
     }
   } catch (e) {
@@ -36,7 +36,7 @@ const setCache = async (url, data, cacheOpt) => {
     const storage = await getStorage(STORAGE_NAME);
     const cacheExp = parseInt(cacheOpt, 10);
 
-    await storage.set(
+    await storage.setItem(
       `loader_${url}`,
       JSON.stringify({
         data,
