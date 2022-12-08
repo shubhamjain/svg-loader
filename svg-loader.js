@@ -200,7 +200,12 @@ const renderIcon = async (elem) => {
   const disableCssScoping =
     elem.getAttribute("data-css-scoping") === "disabled";
 
-  const lsCache = await isCacheAvailable(src);
+  let lsCache = null;
+  const memCacheHit = memoryCache[src];
+  // if not in memory, request from IndexedDB
+  if (!memCacheHit) {
+    lsCache = await isCacheAvailable(src);
+  }
   const isCachingEnabled = cacheOpt !== "disabled";
 
   const renderBodyCb = renderBody.bind(self, elem, {
@@ -209,10 +214,13 @@ const renderIcon = async (elem) => {
     disableCssScoping,
   });
 
-  // Memory cache optimizes same icon requested multiple
-  // times on the page
-  if (memoryCache[src] || (isCachingEnabled && lsCache)) {
-    const cache = memoryCache[src] || lsCache;
+  // Memory cache optimizes same icon requested multiple times on the page
+  if (memCacheHit || (isCachingEnabled && lsCache)) {
+    const cache = memCacheHit || lsCache;
+    // store the entry to memory cache if not there yet
+    if (!memCacheHit) {
+      memoryCache[src] = cache;
+    }
 
     renderBodyCb(cache);
   } else {
