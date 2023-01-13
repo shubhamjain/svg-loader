@@ -67,11 +67,11 @@ const getAllEventNames = () => {
 
 const attributesSet = {};
 const renderBody = (elem, options, body) => {
-    const { enableJs, disableUniqueIds, disableCssScoping } = options;
+    const { enableJs, disableUniqueIds, disableCssScoping, isSprite, iconId } = options;
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(body, "text/html");
-    const fragment = doc.querySelector("svg");
+    const fragment = isSprite ? doc.getElementById(iconId) : doc.querySelector("svg");
 
     const eventNames = getAllEventNames();
 
@@ -85,7 +85,7 @@ const renderBody = (elem, options, body) => {
 
     if (!disableUniqueIds) {
         // Append a unique suffix for every ID so elements don't conflict.
-        Array.from(doc.querySelectorAll("[id]")).forEach((elem) => {
+        Array.from(fragment.querySelectorAll("[id]")).forEach((elem) => {
             const id = elem.getAttribute("id");
             const newId = `${id}_${counter.incr()}`;
             elem.setAttribute("id", newId);
@@ -94,7 +94,7 @@ const renderBody = (elem, options, body) => {
         });
     }
 
-    Array.from(doc.querySelectorAll("*")).forEach((el) => {
+    Array.from(fragment.querySelectorAll("*")).forEach((el) => {
         // Unless explicitly set, remove JS code (default)
         if (el.tagName === "script") {
             el.remove();
@@ -152,7 +152,7 @@ const renderBody = (elem, options, body) => {
 
         // Don't override the attributes already defined, but override the ones that
         // were in the original element
-        if (!elem.getAttribute(name) || elemAttributesSet.has(name)) {
+        if (!elem.getAttribute(name) || elemAttributesSet.has(name) || name !== 'id') {
             elemAttributesSet.add(name);
             elem.setAttribute(name, value);
         }
@@ -193,7 +193,11 @@ const requestsInProgress = {};
 const memoryCache = {};
 
 const renderIcon = async (elem) => {
-    const src = elem.getAttribute("data-src");
+    const url = new URL(elem.getAttribute("data-src"), globalThis.location);
+    const src = url.toString().replace(url.hash, "");
+    const iconId = url.hash.replace("#", "");
+    const isSprite = !!iconId;
+    
     const cacheOpt = elem.getAttribute("data-cache");
 
     const enableJs = elem.getAttribute("data-js") === "enabled";
