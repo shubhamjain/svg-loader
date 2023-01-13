@@ -207,7 +207,7 @@ const renderIcon = async (elem) => {
     const lsCache = await isCacheAvailable(src);
     const isCachingEnabled = cacheOpt !== "disabled";
 
-    const renderBodyCb = renderBody.bind(self, elem, { enableJs, disableUniqueIds, disableCssScoping });
+    const renderBodyCb = renderBody.bind(self, elem, { enableJs, disableUniqueIds, disableCssScoping, isSprite, iconId });
 
     // Memory cache optimizes same icon requested multiple
     // times on the page
