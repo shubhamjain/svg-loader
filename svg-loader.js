@@ -152,7 +152,8 @@ const renderBody = (elem, options, body) => {
 
         // Don't override the attributes already defined, but override the ones that
         // were in the original element
-        if (!elem.getAttribute(name) || elemAttributesSet.has(name) || name !== 'id') {
+        // and do not add an id (usually the case when using icon from sprite)
+        if (name !== 'id' && (!elem.getAttribute(name) || elemAttributesSet.has(name))) {
             elemAttributesSet.add(name);
             elem.setAttribute(name, value);
         }
