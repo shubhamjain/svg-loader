@@ -231,7 +231,7 @@ const renderIcon = async (elem) => {
             .then((body) => {
                 const bodyLower = body.toLowerCase().trim();
 
-                if (!(bodyLower.startsWith("<svg") || bodyLower.startsWith("<?xml"))) {
+                if (!(bodyLower.startsWith("<svg") || bodyLower.startsWith("<?xml") || bodyLower.startsWith("<!doctype") )) {
                     throw Error(`Resource '${src}' returned an invalid SVG file`);
                 }
 
