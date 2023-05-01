@@ -16,6 +16,7 @@ jobs:
           # Defaults to the user or organization that owns the workflow file
           scope: '@octocat'
       - name: vars
+        id: vars
         run: |
           echo "latest_version=$(npm view external-svg-loader version)" >> $GITHUB_OUTPUT
           echo "package_version=$(cat package.json | jq -r '.version')" >> $GITHUB_OUTPUT
