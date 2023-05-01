@@ -36,7 +36,7 @@ const setCache = async (url, data, cacheOpt) => {
     const cacheExp = parseInt(cacheOpt, 10);
     const dataToSet =  JSON.stringify({
         data,
-        expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 * 30 : cacheExp)
+        expiry: Date.now() + (Number.isNaN(cacheExp) ? 60 * 60 * 1000 * 24 * 30 : cacheExp * 1000)
     });
 
     try {
