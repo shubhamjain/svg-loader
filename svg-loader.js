@@ -56,7 +56,7 @@ const getAllEventNames = () => {
         return DOM_EVENTS;
     }
 
-    for (const prop in document.head) {
+    for (const prop in document.body) {
         if (prop.startsWith("on")) {
             DOM_EVENTS.push(prop);
         }
