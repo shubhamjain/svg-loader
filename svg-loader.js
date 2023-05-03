@@ -56,7 +56,7 @@ const getAllEventNames = () => {
         return DOM_EVENTS;
     }
 
-    for (const prop in document.head) {
+    for (const prop in document.body) {
         if (prop.startsWith("on")) {
             DOM_EVENTS.push(prop);
         }
@@ -67,11 +67,12 @@ const getAllEventNames = () => {
 
 const attributesSet = {};
 const renderBody = (elem, options, body) => {
-    const { enableJs, disableUniqueIds, disableCssScoping } = options;
+    const { enableJs, disableUniqueIds, disableCssScoping, spriteIconId } = options;
 
+    const isSpriteIcon = !!spriteIconId;
     const parser = new DOMParser();
     const doc = parser.parseFromString(body, "text/html");
-    const fragment = doc.querySelector("svg");
+    const fragment = isSpriteIcon ? doc.getElementById(spriteIconId) : doc.querySelector("svg");
 
     const eventNames = getAllEventNames();
 
@@ -85,7 +86,7 @@ const renderBody = (elem, options, body) => {
 
     if (!disableUniqueIds) {
         // Append a unique suffix for every ID so elements don't conflict.
-        Array.from(doc.querySelectorAll("[id]")).forEach((elem) => {
+        Array.from(fragment.querySelectorAll("[id]")).forEach((elem) => {
             const id = elem.getAttribute("id");
             const newId = `${id}_${counter.incr()}`;
             elem.setAttribute("id", newId);
@@ -94,7 +95,7 @@ const renderBody = (elem, options, body) => {
         });
     }
 
-    Array.from(doc.querySelectorAll("*")).forEach((el) => {
+    Array.from(fragment.querySelectorAll("*")).concat(fragment).forEach((el) => {
         // Unless explicitly set, remove JS code (default)
         if (el.tagName === "script") {
             el.remove();
@@ -143,25 +144,40 @@ const renderBody = (elem, options, body) => {
                 el.innerHTML = newValue;
         }
     });
+    
+    // For a sprite we want to include the whole DOM of sprite element
+    elem.innerHTML = spriteIconId ? fragment.outerHTML : fragment.innerHTML;
 
-    for (let i = 0; i < fragment.attributes.length; i++) {
-        const {
-            name,
-            value
-        } = fragment.attributes[i];
-
-        // Don't override the attributes already defined, but override the ones that
-        // were in the original element
-        if (!elem.getAttribute(name) || elemAttributesSet.has(name)) {
-            elemAttributesSet.add(name);
-            elem.setAttribute(name, value);
+    // This code block basically merges attributes of the original SVG
+    // the SVG element where it is called from. For eg,
+    //
+    // Let's say the original SVG is this:
+    // 
+    // a.svg = <svg viewBox='..' ...></svg>
+    // 
+    // and it is used as with svg-loader as <svg data-src="./a.svg" width="32"></svg>
+    // this will create a combined element  <svg data-src="./a.svg" width="32" viewBox='..' ...></svg>
+    // 
+    // For sprite icons, we don't need this as we are including the whole outerHTML. 
+    if (!isSpriteIcon) {
+        for (let i = 0; i < fragment.attributes.length; i++) {
+            const {
+                name,
+                value
+            } = fragment.attributes[i];
+    
+            // Don't override the attributes already defined, but override the ones that
+            // were in the original element
+            if (!elem.getAttribute(name) || elemAttributesSet.has(name)) {
+                elemAttributesSet.add(name);
+                elem.setAttribute(name, value);
+            }
         }
     }
 
     attributesSet[elemUniqueId] = elemAttributesSet;
 
     elem.setAttribute("data-id", elemUniqueId);
-    elem.innerHTML = fragment.innerHTML;
 
     const event = new CustomEvent('iconload', {
         bubbles: true
@@ -193,7 +209,10 @@ const requestsInProgress = {};
 const memoryCache = {};
 
 const renderIcon = async (elem) => {
-    const src = elem.getAttribute("data-src");
+    const url = new URL(elem.getAttribute("data-src"), globalThis.location);
+    const src = url.toString().replace(url.hash, "");
+    const spriteIconId = url.hash.replace("#", "");
+    
     const cacheOpt = elem.getAttribute("data-cache");
 
     const enableJs = elem.getAttribute("data-js") === "enabled";
@@ -203,7 +222,7 @@ const renderIcon = async (elem) => {
     const lsCache = await isCacheAvailable(src);
     const isCachingEnabled = cacheOpt !== "disabled";
 
-    const renderBodyCb = renderBody.bind(self, elem, { enableJs, disableUniqueIds, disableCssScoping });
+    const renderBodyCb = renderBody.bind(self, elem, { enableJs, disableUniqueIds, disableCssScoping, spriteIconId });
 
     // Memory cache optimizes same icon requested multiple
     // times on the page
