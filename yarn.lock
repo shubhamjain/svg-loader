@@ -537,11 +537,6 @@ follow-redirects@^1.0.0:
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.5.tgz#f09a5848981d3c772b5392309778523f8d85c381"
   integrity sha512-wtphSXy7d4/OR+MvIFbCVBDzZ5520qV8XfPklSN5QtxuMUJZ+b0Wnst1e1lCDocfzuCkHqj8k0FpZqO+UIaKNA==
 
-fsevents@~2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
-  integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
-
 function-bind@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
@@ -1195,13 +1190,6 @@ resolve@^1.10.0, resolve@^1.9.0:
     is-core-module "^2.8.1"
     path-parse "^1.0.7"
     supports-preserve-symlinks-flag "^1.0.0"
-
-rollup@^2.72.0:
-  version "2.72.0"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.72.0.tgz#f94280b003bcf9f2f1f2594059a9db5abced371e"
-  integrity sha512-KqtR2YcO35/KKijg4nx4STO3569aqCUeGRkKWnJ6r+AvBBrVY9L4pmf4NHVrQr4mTOq6msbohflxr2kpihhaOA==
-  optionalDependencies:
-    fsevents "~2.3.2"
 
 safari-14-idb-fix@^3.0.0:
   version "3.0.0"
