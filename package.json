@@ -12,7 +12,7 @@
     "version": "1.6.5",
     "scripts": {
         "postinstall": "npm-run-all build:*",
-        "build:js": "NODE_ENV=production webpack build",
+        "build:js": "cross-env NODE_ENV=production webpack build",
         "build:cp": "cp ./dist/svg-loader.min.js ./svg-loader.min.js",
         "build": "npm-run-all build:*",
         "dev:watch": "webpack watch --mode development",
