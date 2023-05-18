@@ -12,7 +12,7 @@
     "version": "1.6.5",
     "scripts": {
         "postinstall": "npm-run-all build:*",
-        "build:js": "NODE_ENV=production webpack build",
+        "build:js": "cross-env NODE_ENV=production webpack build",
         "build:cp": "cp ./dist/svg-loader.min.js ./svg-loader.min.js",
         "build": "npm-run-all build:*",
         "dev:watch": "webpack watch --mode development",
@@ -21,6 +21,7 @@
         "prepare": "husky install"
     },
     "devDependencies": {
+        "cross-env": "^7.0.3",
         "http-server": "^14.0.0",
         "husky": "^8.0.3"
     },
