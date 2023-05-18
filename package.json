@@ -21,6 +21,7 @@
         "prepare": "husky install"
     },
     "devDependencies": {
+        "cross-env": "^7.0.3",
         "http-server": "^14.0.0",
         "husky": "^8.0.3"
     },
