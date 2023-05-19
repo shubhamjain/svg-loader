@@ -9,7 +9,7 @@
         "url": "https://github.com/shubhamjain/svg-loader.git"
     },
     "main": "dist/svg-loader.min.js",
-    "version": "1.6.6",
+    "version": "1.6.7",
     "scripts": {
         "postinstall": "npm-run-all build:*",
         "build:js": "cross-env NODE_ENV=production webpack build",
@@ -21,11 +21,11 @@
         "prepare": "husky install"
     },
     "devDependencies": {
-        "cross-env": "^7.0.3",
         "http-server": "^14.0.0",
         "husky": "^8.0.3"
     },
     "dependencies": {
+        "cross-env": "^7.0.3",
         "idb-keyval": "^6.2.0",
         "npm-run-all": "^4.1.5",
         "webpack": "^5.72.0",
