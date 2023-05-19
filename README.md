@@ -2,11 +2,11 @@
 [![NPM](https://img.shields.io/npm/v/external-svg-loader.svg)](https://www.npmjs.com/package/external-svg-loader)
 ![minified size](http://img.badgesize.io/shubhamjain/svg-loader/master/svg-loader.min.js?label=minified%20size&v=10) ![gzip size](http://img.badgesize.io/shubhamjain/svg-loader/master/svg-loader.min.js?compression=gzip&v=10)
 
-SVGs from an external source can be rendered via `<img>` tags, but this has multiple drawbacks: you can't customize the fill, use CSS variables, or use focus/hover states.
+SVGs from an external source can be rendered with `<img>` tags, but this has multiple drawbacks: you can't customize the fill or stroke colors, use CSS variables, or use focus/hover states.
 
-SVG loader is a simple JS code you can include that fetches SVGs using XHR and injects the SVG code in the tag's place, giving you best of both worlds: externally stored SVGs (e.g, on CDN) and inline SVGs.
+SVG Loader is a simple JS library that fetches SVGs using XHR and injects the SVG code in the tag's place. This lets you use externally stored SVGs (e.g, on CDN) just like inline SVGs.
 
-It's super-tiny, works well with frameworks and has minimal to no impact on performance.
+It's super-tiny, works with all frameworks, requires no additional code except the initial script load, and has minimal to no impact on performance.
 
 [**Demo →**](https://codepen.io/shubhamjainco/pen/rNyBVmY)
 
