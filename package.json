@@ -13,7 +13,7 @@
     "scripts": {
         "postinstall": "npm-run-all build:*",
         "build:js": "cross-env NODE_ENV=production webpack build",
-        "build:cp": "npx cpr --overwrite ./dist/svg-loader.min.js ./svg-loader.min.js",
+        "build:cp": "npx cpr ./dist/svg-loader.min.js ./svg-loader.min.js --overwrite",
         "build": "npm-run-all build:*",
         "dev:watch": "webpack watch --mode development",
         "dev:http": "cd test && http-server",
