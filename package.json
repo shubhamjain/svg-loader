@@ -9,7 +9,7 @@
         "url": "https://github.com/shubhamjain/svg-loader.git"
     },
     "main": "dist/svg-loader.min.js",
-    "version": "1.6.7",
+    "version": "1.6.8",
     "scripts": {
         "postinstall": "npm-run-all build:*",
         "build:js": "cross-env NODE_ENV=production webpack build",
