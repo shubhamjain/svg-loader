@@ -7,11 +7,14 @@ const { getStorage } = require("./lib/storage");
 
 const STORAGE_NAME = "svg-loader-cache";
 
-
-
-const isCacheAvailable = async (url) => {
+const memoryCache = {};
+const getEntryFromCache = async (url) => {
   try {
-    const storage = await getStorage(STORAGE_NAME);
+    if (memoryCache[url]) {
+      return memoryCache[url];
+    }
+
+    const storage = getStorage(STORAGE_NAME);
     let item = await storage.getItem(`loader_${url}`);
 
     if (!item) {
@@ -21,6 +24,7 @@ const isCacheAvailable = async (url) => {
     item = JSON.parse(item);
 
     if (Date.now() < item.expiry) {
+      memoryCache[url] = item.data;
       return item.data;
     } else {
       storage.removeItem(`loader_${url}`);
@@ -33,7 +37,7 @@ const isCacheAvailable = async (url) => {
 
 const setCache = async (url, data, cacheOpt) => {
   try {
-    const storage = await getStorage(STORAGE_NAME);
+    const storage = getStorage(STORAGE_NAME);
     const cacheExp = parseInt(cacheOpt, 10);
 
     await storage.setItem(
@@ -189,7 +193,6 @@ const renderBody = (elem, options, body) => {
 };
 
 const requestsInProgress = {};
-const memoryCache = {};
 
 const renderIcon = async (elem) => {
   const src = elem.getAttribute("data-src");
@@ -200,12 +203,7 @@ const renderIcon = async (elem) => {
   const disableCssScoping =
     elem.getAttribute("data-css-scoping") === "disabled";
 
-  let lsCache = null;
-  const memCacheHit = memoryCache[src];
-  // if not in memory, request from IndexedDB
-  if (!memCacheHit) {
-    lsCache = await isCacheAvailable(src);
-  }
+  const cachedEntry = await getEntryFromCache(src);
   const isCachingEnabled = cacheOpt !== "disabled";
 
   const renderBodyCb = renderBody.bind(self, elem, {
@@ -215,14 +213,8 @@ const renderIcon = async (elem) => {
   });
 
   // Memory cache optimizes same icon requested multiple times on the page
-  if (memCacheHit || (isCachingEnabled && lsCache)) {
-    const cache = memCacheHit || lsCache;
-    // store the entry to memory cache if not there yet
-    if (!memCacheHit) {
-      memoryCache[src] = cache;
-    }
-
-    renderBodyCb(cache);
+  if (cachedEntry) {
+    renderBodyCb(cachedEntry);
   } else {
     // If the same icon is being requested to rendered
     // avoid firing multiple XHRs
@@ -249,11 +241,10 @@ const renderIcon = async (elem) => {
           throw Error(`Resource '${src}' returned an invalid SVG file`);
         }
 
+        memoryCache[src] = body;
         if (isCachingEnabled) {
           setCache(src, body, cacheOpt);
         }
-
-        memoryCache[src] = body;
 
         renderBodyCb(body);
       })
@@ -306,13 +297,14 @@ function renderAllSVGs() {
 }
 
 let observerAdded = false;
+let observer;
 const addObservers = () => {
   if (observerAdded) {
     return;
   }
 
   observerAdded = true;
-  const observer = new MutationObserver((mutationRecords) => {
+  observer = new MutationObserver((mutationRecords) => {
     const shouldTriggerRender = mutationRecords.some((record) =>
       Array.from(record.addedNodes).some(
         (elem) =>
@@ -355,5 +347,16 @@ if (globalThis.addEventListener) {
 
     renderAllSVGs();
     addObservers();
+  });
+
+  // destroy on page unload
+  globalThis.addEventListener("unload", () => {
+    if (intObserver) {
+      intObserver.disconnect();
+    }
+
+    if (observer) {
+      observer.disconnect();
+    }
   });
 }
