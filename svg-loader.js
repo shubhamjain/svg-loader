@@ -65,6 +65,9 @@ const getAllEventNames = () => {
     // SVG <animate> events
     DOM_EVENTS.push('onbegin', 'onend', 'onrepeat');
 
+    // Some non-standard events, just in case the browser is handling them
+    DOM_EVENTS.push('onfocusin', 'onfocusout', 'onbounce', 'onfinish', 'onshow');
+
     return DOM_EVENTS;
 };
 
