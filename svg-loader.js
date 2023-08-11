@@ -62,6 +62,9 @@ const getAllEventNames = () => {
         }
     }
 
+    // SVG <animate> events
+    DOM_EVENTS.push('onbegin', 'onend', 'onrepeat');
+
     return DOM_EVENTS;
 };
 
@@ -128,7 +131,7 @@ const renderBody = (elem, options, body) => {
             }
 
             // Remove "javascript:..." unless specifically enabled
-            if (["href", "xlink:href"].includes(name) && value.startsWith("javascript") && !enableJs) {
+            if (["href", "xlink:href", "values"].includes(name) && value.startsWith("javascript") && !enableJs) {
                 attributesToRemove.push(name);
             }
         }
