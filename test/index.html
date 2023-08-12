@@ -1,6 +1,5 @@
 <html>
     <head>
-        <link rel="stylesheet" href="/main.css">
         <style>
             body {
                 padding-bottom: 80px;
@@ -60,6 +59,15 @@
     <div class="heading">Icon with JS (complex)</div>
     <div>This is a more complicated SVG with JS, only map with overlay message should be shown</div>
     <svg data-src="./USStates.svg"></svg>
+
+    <div class="heading">Icon with XSS</div>
+    <div>Tricky XSS that needs to be filtered out. On clicking "X" nothing should happen </div>
+    <svg data-src="/icons/svg-xss.svg"></svg>
+
+    <div class="heading">Icon with XSS 2</div>
+    <div>Alert should not come</div>
+    <svg data-src="/icons/svg-xss-2.svg"></svg>
+
 
     <div class="heading">Icon with JS (enabled)</div>
     <div>On hover alert should be thrown</div>
