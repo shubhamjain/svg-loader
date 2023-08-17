@@ -23,6 +23,7 @@ jobs:
       - name: publish
         run: |
           yarn
+          yarn build
           yarn publish
         if: ${{ steps.vars.outputs.latest_version != steps.vars.outputs.package_version }}
         env:
