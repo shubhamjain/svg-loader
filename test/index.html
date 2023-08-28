@@ -46,6 +46,15 @@
         });
     </script>
 
+    <div class="heading">Icon load error event (see console)</div>
+    <svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/this-svg-does-not-exist.svg"></svg>
+
+    <script>
+        window.addEventListener('iconloaderror', (e) => {
+            console.error('Error event fired:', e.detail);
+        });
+    </script>
+
     <div class="heading">Icon using doctype declaration</div>
     <svg data-src="/icons/cog-with-doctype.svg" fill="green"></svg>
 

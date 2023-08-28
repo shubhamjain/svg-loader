@@ -270,6 +270,11 @@ const renderIcon = async (elem) => {
             })
             .catch((e) => {
                 console.error(e);
+                const event = new CustomEvent('iconloaderror', {
+                    bubbles: true,
+                    detail: t.toString(),
+                });
+                elem.dispatchEvent(event);
             })
             .finally(() => {
                 delete requestsInProgress[src];
