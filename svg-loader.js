@@ -272,7 +272,7 @@ const renderIcon = async (elem) => {
                 console.error(e);
                 const event = new CustomEvent('iconloaderror', {
                     bubbles: true,
-                    detail: t.toString(),
+                    detail: e.toString(),
                 });
                 elem.dispatchEvent(event);
             })
