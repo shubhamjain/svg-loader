@@ -196,7 +196,7 @@ const renderBody = (elem, options, body) => {
         // no way to specify the context for execution. So, `this` in the attribute
         // will point to `window` instead of the element itself. 
         //
-        // Here we are recycling a rarely used GlobalEventHandler 'onloadedmetadata'
+        // Here we are recycling a rarely used GlobalEventHandler 'onauxclick'
         // and offloading the execution to the browser. This is a hack, but because
         // the event doesn't bubble, it shouldn't affect anything else in the code. 
         elem.setAttribute('onauxclick', elem.getAttribute('oniconload'));
@@ -275,6 +275,11 @@ const renderIcon = async (elem) => {
                     detail: e.toString(),
                 });
                 elem.dispatchEvent(event);
+                if(elem.getAttribute('oniconloaderror')){
+                    // the oniconloaderror inline function will have access to an `error` argument
+                    const loadErrorFunction = Function("error", elem.getAttribute('oniconloaderror'));
+                    loadErrorFunction(e);
+                }
             })
             .finally(() => {
                 delete requestsInProgress[src];

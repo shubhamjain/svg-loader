@@ -224,6 +224,13 @@ When an error occurs during loading of the SVG file, an `iconloaderror` event is
 </script>
 ```
 
+Similarly to the `iconload` event, `iconloaderror` can also be used with an inline function, which will have access to an `error` argument (the `Error` object that was thrown):
+```html
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg"
+  oniconloaderror="console.log('Error loading SVG:', error.toString())"></svg>
+```
+
 ### Using Events in React
 React doesn't support custom events out of the box. To circumvent this limitation, you can use [refs](https://reactjs.org/docs/refs-and-the-dom.html).
 
