@@ -9,7 +9,7 @@
         "url": "https://github.com/shubhamjain/svg-loader.git"
     },
     "main": "dist/svg-loader.min.js",
-    "version": "1.7.0",
+    "version": "1.7.1",
     "scripts": {
         "build:js": "cross-env NODE_ENV=production webpack build",
         "build:cp": "npx cpr ./dist/svg-loader.min.js ./svg-loader.min.js --overwrite",
