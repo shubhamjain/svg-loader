@@ -211,8 +211,28 @@ When the SVG has been loaded an event `iconload` is triggered. This can be used 
 </script>
 ```
 
+### Using the `iconloaderror` event
+When an error occurs during loading of the SVG file, an `iconloaderror` event is triggered, passing the error message as the event's `detail`.
+
+```html
+<svg data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/this-svg-does-not-exist.svg"></svg>
+
+<script>
+  window.addEventListener('iconloaderror', (e) => {
+    console.error('Failed to load SVG:', e.detail);
+  });
+</script>
+```
+
+Similarly to the `iconload` event, `iconloaderror` can also be used with an inline function, which will have access to an `error` argument (the `Error` object that was thrown):
+```html
+<svg
+  data-src="https://unpkg.com/@mdi/svg@5.9.55/svg/cog.svg"
+  oniconloaderror="console.log('Error loading SVG:', error.toString())"></svg>
+```
+
 ### Using Events in React
-React doesn't support custom events out of the box. To circumvent this limitation, you can [refs](https://reactjs.org/docs/refs-and-the-dom.html).
+React doesn't support custom events out of the box. To circumvent this limitation, you can use [refs](https://reactjs.org/docs/refs-and-the-dom.html).
 
 ```jsx
 class MyApp extends React.Component {
@@ -226,7 +246,10 @@ class MyApp extends React.Component {
   componentDidMount() {
     this.ref.current.addEventListener('iconload', () => {
       console.log("Icon Loaded", this.ref.current)
-    })
+    });
+    this.ref.current.addEventListener('iconloaderror', (e) => {
+      console.error('Failed to load SVG:', e.detail);
+    });
   }
 }
 ```
