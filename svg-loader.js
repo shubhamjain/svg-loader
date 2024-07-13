@@ -73,7 +73,7 @@ const getAllEventNames = () => {
 
 const attributesSet = {};
 const renderBody = (elem, options, body) => {
-    const { enableJs, disableUniqueIds, disableCssScoping, spriteIconId } = options;
+    const { enableJs, disableUniqueIds, disableCssScoping, spriteIconId, uniqueIdPrefix } = options;
 
     const isSpriteIcon = !!spriteIconId;
     const parser = new DOMParser();
@@ -91,10 +91,10 @@ const renderBody = (elem, options, body) => {
     const idMap = {};
 
     if (!disableUniqueIds) {
-        // Append a unique suffix for every ID so elements don't conflict.
+        // Append a unique suffix (or a given prefix) for every ID so elements don't conflict.
         Array.from(fragment.querySelectorAll("[id]")).forEach((elem) => {
             const id = elem.getAttribute("id");
-            const newId = `${id}_${counter.incr()}`;
+            const newId = uniqueIdPrefix ? `${uniqueIdPrefix}-${id}` : `${id}_${counter.incr()}`;
             elem.setAttribute("id", newId);
 
             idMap[id] = newId;
@@ -224,11 +224,12 @@ const renderIcon = async (elem) => {
     const enableJs = elem.getAttribute("data-js") === "enabled";
     const disableUniqueIds = elem.getAttribute("data-unique-ids") === "disabled";
     const disableCssScoping = elem.getAttribute("data-css-scoping") === "disabled";
+    const uniqueIdPrefix = elem.getAttribute("data-unique-id-prefix");
 
     const lsCache = await isCacheAvailable(src);
     const isCachingEnabled = cacheOpt !== "disabled";
 
-    const renderBodyCb = renderBody.bind(self, elem, { enableJs, disableUniqueIds, disableCssScoping, spriteIconId });
+    const renderBodyCb = renderBody.bind(self, elem, { enableJs, disableUniqueIds, disableCssScoping, spriteIconId, uniqueIdPrefix });
 
     // Memory cache optimizes same icon requested multiple
     // times on the page
