@@ -77,8 +77,8 @@ const renderBody = (elem, options, body) => {
 
     const isSpriteIcon = !!spriteIconId;
     const parser = new DOMParser();
-    const doc = parser.parseFromString(body, "text/html");
-    const fragment = isSpriteIcon ? doc.getElementById(spriteIconId) : doc.querySelector("svg");
+    const doc = parser.parseFromString(body, "image/svg+xml");
+    const fragment = isSpriteIcon ? doc.getElementById(spriteIconId) : doc.documentElement;
 
     const eventNames = getAllEventNames();
 
@@ -152,7 +152,8 @@ const renderBody = (elem, options, body) => {
     });
     
     // For a sprite we want to include the whole DOM of sprite element
-    elem.innerHTML = spriteIconId ? fragment.outerHTML : fragment.innerHTML;
+    const replacedContent = spriteIconId ? [fragment] : fragment.children;
+    elem.replaceChildren(...replacedContent);
 
     // This code block basically merges attributes of the original SVG
     // the SVG element where it is called from. For eg,
